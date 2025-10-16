@@ -26,25 +26,34 @@
                     @auth
                         <a
                             href="{{ url('/dashboard') }}"
-                            class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] border-[#19140035] hover:border-[#1915014a] border text-[#1b1b18] dark:border-[#3E3E3A] dark:hover:border-[#62605b] rounded-sm text-sm leading-normal"
+                            class="group inline-flex items-center px-8 py-3 bg-gradient-to-r from-orange-500 via-orange-600 to-red-500 hover:from-orange-600 hover:via-red-500 hover:to-pink-500 text-white font-bold rounded-full transition-all duration-500 transform hover:scale-110 hover:-rotate-2 shadow-xl hover:shadow-orange-500/60 text-base lg:text-lg relative overflow-hidden animate-pulse"
                         >
-                            Dashboard
+                            <span class="mr-3 text-2xl group-hover:animate-bounce">🏠</span> 
+                            <span class="relative z-10 tracking-wide">Dashboard</span>
+                            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
                         </a>
                     @else
-                        <a
-                            href="{{ route('login') }}"
-                            class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] text-[#1b1b18] border border-transparent hover:border-[#19140035] dark:hover:border-[#3E3E3A] rounded-sm text-sm leading-normal"
-                        >
-                            Log in
-                        </a>
-
-                        @if (Route::has('register'))
+                        <div class="flex items-center space-x-5">
                             <a
-                                href="{{ route('register') }}"
-                                class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] border-[#19140035] hover:border-[#1915014a] border text-[#1b1b18] dark:border-[#3E3E3A] dark:hover:border-[#62605b] rounded-sm text-sm leading-normal">
-                                Register
+                                href="{{ route('login') }}"
+                                class="group inline-flex items-center px-8 py-3 bg-white/95 backdrop-blur-sm hover:bg-orange-50 dark:bg-gray-800/90 dark:hover:bg-gray-700 text-gray-800 dark:text-white font-bold rounded-full border-3 border-orange-400 hover:border-orange-600 dark:border-orange-500 dark:hover:border-orange-300 transition-all duration-500 shadow-xl hover:shadow-orange-400/50 text-base lg:text-lg relative overflow-hidden transform hover:scale-110 hover:-translate-y-1"
+                            >
+                                <span class="mr-3 text-2xl group-hover:animate-bounce transition-transform duration-300">🔑</span>
+                                <span class="relative z-10 font-black tracking-widest uppercase">Đăng Nhập</span>
+                                <div class="absolute inset-0 bg-gradient-to-r from-orange-100/80 to-orange-200/80 dark:from-orange-900/30 dark:to-orange-800/30 scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-center"></div>
                             </a>
-                        @endif
+
+                            @if (Route::has('register'))
+                                <a
+                                    href="{{ route('register') }}"
+                                    class="group inline-flex items-center px-8 py-3 bg-gradient-to-r from-pink-500 via-red-500 to-orange-500 hover:from-purple-600 hover:via-pink-600 hover:to-red-600 text-white font-black rounded-full transition-all duration-700 transform hover:scale-125 hover:rotate-3 shadow-2xl hover:shadow-pink-600/70 text-base lg:text-lg relative overflow-hidden animate-bounce">
+                                    <span class="mr-3 text-2xl group-hover:animate-spin transition-transform duration-500">🎉</span>
+                                    <span class="relative z-10 font-black tracking-widest uppercase">Đăng Ký</span>
+                                    <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                                </a>
+                            @endif
+                        </div>
+                    @endif
                     @endauth
                 </nav>
             @endif

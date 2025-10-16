@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pizza Store</title>
+    @vite(['resources/css/app.css'])
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('css/style-inline.css') }}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded@48,400,0,0" />
@@ -13,64 +14,95 @@
 
 
 <body class="@auth logged-in @endauth">
-<header>
+<header class="pizza-header">
     <div class="container">
-        <div class="content__header">
-            <div class="logo__header">
-                <img src="{{ asset('uploads/logopizza (1).png') }}" alt="">
+        <div class="pizza-navbar">
+            <!-- Logo Section -->
+            <div class="pizza-logo-section">
+                <div class="pizza-logo">
+                    <span class="pizza-icon">🍕</span>
+                    <img src="{{ asset('uploads/logopizza (1).png') }}" alt="Pizza Store" class="logo-img">
+                </div>
             </div>
-            <div class="menu__header">
+
+            <!-- Navigation Menu -->
+            <div class="pizza-nav-menu">
                 <nav>
-                    <ul class="nav__link">
-                        <li><a href="/">Trang chủ</a></li>
-                        <li><a href="#">Giới thiệu</a></li>
-                        <li><a href="#">Sản phẩm</a></li>
-                        <li><a href="#">Liên hệ</a></li>
+                    <ul class="pizza-nav-links">
+                        <li class="pizza-nav-item">
+                            <a href="/" class="pizza-nav-link">
+                                <span>Trang chủ</span>
+                            </a>
+                        </li>
+                        <li class="pizza-nav-item">
+                            <a href="#" class="pizza-nav-link">
+                                <span>Giới thiệu</span>
+                            </a>
+                        </li>
+                        <li class="pizza-nav-item">
+                            <a href="#" class="pizza-nav-link">
+                                <span>Sản phẩm</span>
+                            </a>
+                        </li>
+                        <li class="pizza-nav-item">
+                            <a href="#" class="pizza-nav-link">
+                                <span>Liên hệ</span>
+                            </a>
+                        </li>
                     </ul>
                 </nav>
             </div>
 
-            {{-- Hiển thị user profile nếu đã đăng nhập --}}
-            @auth
-<div class="user-profile logged-in">
-    <div class="user-avatar">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</div>
-    <div class="user-info">
-        <span class="user-greeting">Xin chào,</span>
-        <span class="user-email">{{ auth()->user()->email }}</span>
-    </div>
-    <div class="user-dropdown">
-        <a href="#" class="dropdown-item" id="favorite-menu">
-            <i class="fas fa-heart"></i>
-            <span>Pizzas yêu thích</span>
-        </a>
-        <div class="favorite-list">
-            <div class="no-favorites">Chưa có pizza yêu thích</div>
-        </div>
-        <div class="dropdown-divider"></div>
-        <form method="POST" action="{{ route('logout') }}">
-            @csrf
-            <button type="submit" class="dropdown-item" id="logout-link">
-                <i class="fas fa-sign-out-alt"></i>
-                <span>Đăng xuất</span>
-            </button>
-        </form>
-    </div>
-</div>
-@endauth
+            <!-- User Actions Section -->
+            <div class="pizza-user-section">
+                @auth
+                    <div class="pizza-user-profile">
+                        <div class="pizza-user-avatar">
+                            <span class="avatar-text">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</span>
+                            <div class="avatar-status"></div>
+                        </div>
+                        <div class="pizza-user-info">
+                            <span class="user-greeting">Xin chào!</span>
+                            <span class="user-name">{{ auth()->user()->name }}</span>
+                        </div>
+                        <div class="pizza-user-dropdown">
+                            <a href="#" class="pizza-dropdown-item">
+                                <span>Yêu thích</span>
+                            </a>
+                            <a href="#" class="pizza-dropdown-item">
+                                <span>Đơn hàng</span>
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="pizza-dropdown-item pizza-logout">
+                                    <span>Đăng xuất</span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                @endauth
 
+                @guest
+                    <div class="pizza-auth-buttons">
+                        <a href="{{ route('login') }}" class="pizza-login-btn">
+                            ĐĂNG NHẬP
+                        </a>
+                        <a href="{{ route('register') }}" class="pizza-register-btn">
+                            ĐĂNG KÝ
+                        </a>
+                    </div>
+                @endguest
 
-            {{-- Nếu chưa đăng nhập --}}
-            @guest
-                <a href="{{ route('login') }}" class="login-btn">ĐĂNG NHẬP</a>
-                <a href="{{ route('register') }}" class="login-btn">ĐĂNG KÝ</a>
-            @endguest
-
-
-            <div class="card__head">
-                <div class="card" id="popup_card">
-                    <img src="{{ asset('uploads/Group 16.png') }}" alt="">
-                    <span>2</span>
-                </div>
+                <!-- Cart Section - Only show when logged in -->
+                @auth
+                    <div class="pizza-cart">
+                        <div class="pizza-cart-icon" id="popup_card">
+                            <div class="red-cart-icon">🛒</div>
+                            <span class="cart-count"></span>
+                        </div>
+                    </div>
+                @endauth
             </div>
         </div>
     </div>
@@ -87,8 +119,8 @@
                     <div class="item"><img src="{{ asset('uploads/uudai1 (1).png') }}" alt=""></div>
                     <div class="item"><img src="{{ asset('uploads/uudai3.png') }}" alt=""></div>
                 </div>
-                <div class="next"><i class="fas fa-arrow-right"></i></div>
-                <div class="prev"><i class="fas fa-arrow-left"></i></div>
+                <div class="next"><span>Tiếp</span></div>
+                <div class="prev"><span>Trước</span></div>
             </div>
         </div>
     </section>

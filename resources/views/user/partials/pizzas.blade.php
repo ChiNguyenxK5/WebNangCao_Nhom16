@@ -5,12 +5,12 @@
         <div class="pizza-grid">
             @forelse ($pizzas as $pizza)
                 <div class="pizza-card">
-                    <img src="{{ asset($pizza->image ?? 'uploads/default-pizza.jpg') }}" alt="{{ $pizza->name }}">
+                    <img src="{{ asset($pizza->image_url ?? 'uploads/default-pizza.jpg') }}" alt="{{ $pizza->name }}">
                     <div class="pizza-info">
                         <h3>{{ $pizza->name }}</h3>
                         <p class="pizza-type">{{ ucfirst($pizza->type) }} • {{ $pizza->capacity }} người</p>
                         <p class="pizza-desc">{{ Str::limit($pizza->description, 100) }}</p>
-                        <p class="pizza-price">{{ number_format($pizza->price) }}đ / đêm</p>
+                        <p class="pizza-price">{{ number_format($pizza->price) }} VND/Cái</p>
 
                         @if ($pizza->available)
                             <button class="btn-book">Đặt Pizza</button>
