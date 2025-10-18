@@ -49,7 +49,12 @@
                         <p class="pizza-price">{{ number_format($pizza->price) }} VND</p>
 
                         @if ($pizza->available)
-                            <button class="btn-book">Đặt Pizza</button>
+                            <button class="btn-book" 
+                                data-pizza-id="{{ $pizza->id }}"
+                                data-pizza-name="{{ $pizza->name }}"
+                                data-pizza-price="{{ $pizza->price }}"
+                                data-pizza-image="{{ asset($pizza->image_url ?? 'uploads/default-pizza.jpg') }}"
+                            >Đặt Pizza</button>
                         @else
                             <span class="pizza-status">Hết Pizza</span>
                         @endif
@@ -212,3 +217,60 @@
     }
 }
 </style>
+
+<!-- Modal order form -->
+<div id="order-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); align-items:center; justify-content:center; z-index:9999;">
+    <div style="background:white; width:90%; max-width:720px; border-radius:8px; padding:20px; position:relative;">
+        <button id="order-modal-close" style="position:absolute; right:10px; top:10px; background:#eee; border-radius:999px; padding:6px 10px;">✕</button>
+        <div style="display:flex; gap:20px; flex-wrap:wrap;">
+            <div style="flex:1 1 220px;">
+                <img id="modal-pizza-image" src="" alt="" style="width:100%; height:200px; object-fit:cover; border-radius:6px;">
+            </div>
+            <div style="flex:1 1 300px;">
+                <h3 id="modal-pizza-name" style="margin:0 0 8px 0;"></h3>
+                <p id="modal-pizza-price" style="margin:0 0 12px 0; font-weight:700; color:#e63946;"></p>
+
+                <form id="order-modal-form" action="{{ route('orders.store') }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="pizza_id" id="modal-pizza-id">
+
+                    <div style="margin-bottom:8px;">
+                        <label>Kích thước</label>
+                        <select name="pizza_size" style="width:100%; padding:8px; margin-top:4px;">
+                            <option value="small">Small</option>
+                            <option value="medium">Medium</option>
+                            <option value="large">Large</option>
+                        </select>
+                    </div>
+
+                    <div style="margin-bottom:8px;">
+                        <label>Số lượng</label>
+                        <input type="number" name="quantity" value="1" min="1" style="width:100%; padding:8px; margin-top:4px;">
+                    </div>
+
+                    <div style="margin-bottom:8px;">
+                        <label>Địa chỉ giao hàng</label>
+                        <textarea name="shipping_address" rows="2" style="width:100%; padding:8px; margin-top:4px;" required></textarea>
+                    </div>
+
+                    <div style="margin-bottom:8px;">
+                        <label>Số điện thoại</label>
+                        <input type="text" name="phone" style="width:100%; padding:8px; margin-top:4px;" required>
+                    </div>
+
+                    <div style="margin-bottom:8px;">
+                        <label>Ghi chú (tùy chọn)</label>
+                        <textarea name="notes" rows="2" style="width:100%; padding:8px; margin-top:4px;"></textarea>
+                    </div>
+
+                    <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:12px;">
+                        <button type="button" id="order-modal-cancel" style="background:#eee; padding:10px 16px; border-radius:6px;">Hủy</button>
+                        <button type="submit" style="background:#ff6b35; color:white; padding:10px 16px; border-radius:6px;">Đặt hàng</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{{ asset('js/order-modal.js') }}"></script>
