@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PizzaController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProfileUserController;
 use App\Models\Pizza;
 
 /*
@@ -45,6 +46,15 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/admin/pizzas', [PizzaController::class, 'store'])->name('admin.pizzas.store');
     Route::put('/admin/pizzas/{pizza}', [PizzaController::class, 'update'])->name('admin.pizzas.update');
     Route::delete('/admin/pizzas/{pizza}', [PizzaController::class, 'destroy'])->name('admin.pizzas.destroy');
+});
+Route::middleware('auth')->group(function () {
+    Route::get('/dashboard', function () {
+        return view('dashboard');
+    })->name('dashboard');
+
+    // Profile User routes
+    Route::get('/profile/user', [ProfileUserController::class, 'show'])->name('profile.user.show');
+    Route::put('/profile/user', [ProfileUserController::class, 'update'])->name('profile.user.update');
 });
 
 require __DIR__ . '/auth.php';

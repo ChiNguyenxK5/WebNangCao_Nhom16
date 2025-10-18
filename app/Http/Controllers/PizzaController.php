@@ -8,12 +8,28 @@ use Illuminate\Http\Request;
 class PizzaController extends Controller
 {
     // Trang user — hiển thị danh sách pizza
-    public function index()
+    public function index(Request $request)
     {
-        $pizzas = Pizza::where('available', true)->get();
-        return view('user.home', compact('pizzas'));
-    }
+        $selectedTopping = $request->get('topping', 'all');
 
+        $query = Pizza::where('available', true);
+
+        if ($selectedTopping !== 'all') {
+            $query->where('topping', $selectedTopping);
+        }
+
+        $pizzas = $query->get();
+
+        // Lấy danh sách toppings từ database
+        $toppings = Pizza::select('topping')
+            ->whereNotNull('topping')
+            ->distinct()
+            ->pluck('topping')
+            ->filter()
+            ->sort();
+
+        return view('user.home', compact('pizzas', 'toppings', 'selectedTopping'));
+    }
     // Trang admin — quản lý pizza
     public function adminIndex()
     {

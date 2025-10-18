@@ -27,31 +27,31 @@
 
             <!-- Navigation Menu -->
             <div class="pizza-nav-menu">
-                <nav>
-                    <ul class="pizza-nav-links">
-                        <li class="pizza-nav-item">
-                            <a href="/" class="pizza-nav-link">
-                                <span>Trang chủ</span>
-                            </a>
-                        </li>
-                        <li class="pizza-nav-item">
-                            <a href="#" class="pizza-nav-link">
-                                <span>Giới thiệu</span>
-                            </a>
-                        </li>
-                        <li class="pizza-nav-item">
-                            <a href="#" class="pizza-nav-link">
-                                <span>Sản phẩm</span>
-                            </a>
-                        </li>
-                        <li class="pizza-nav-item">
-                            <a href="#" class="pizza-nav-link">
-                                <span>Liên hệ</span>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
+    <nav>
+        <ul class="pizza-nav-links">
+            <li class="pizza-nav-item">
+                <a href="/" class="pizza-nav-link">
+                    <span>Trang chủ</span>
+                </a>
+            </li>
+            <li class="pizza-nav-item">
+                <a href="#footer-section" class="pizza-nav-link smooth-scroll">
+                    <span>Giới thiệu</span>
+                </a>
+            </li>
+            <li class="pizza-nav-item">
+                <a href="#" class="pizza-nav-link">
+                    <span>Sản phẩm</span>
+                </a>
+            </li>
+            <li class="pizza-nav-item">
+                <a href="#footer-section" class="pizza-nav-link smooth-scroll">
+                    <span>Liên hệ</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>
 
             <!-- User Actions Section -->
             <div class="pizza-user-section">
@@ -66,11 +66,11 @@
                             <span class="user-name">{{ auth()->user()->name }}</span>
                         </div>
                         <div class="pizza-user-dropdown">
-                            <a href="#" class="pizza-dropdown-item">
-                                <span>Yêu thích</span>
+                            <a href="{{ route('profile.user.show') }}" class="pizza-dropdown-item">
+                                <span>Thông tin cá nhân</span>
                             </a>
                             <a href="#" class="pizza-dropdown-item">
-                                <span>Đơn hàng</span>
+                                <span>Chi tiết đơn hàng</span>
                             </a>
                             <div class="dropdown-divider"></div>
                             <form method="POST" action="{{ route('logout') }}">
@@ -99,7 +99,7 @@
                     <div class="pizza-cart">
                         <div class="pizza-cart-icon" id="popup_card">
                             <div class="red-cart-icon">🛒</div>
-                            <span class="cart-count"></span>
+                            <span class="cart-count">0</span>
                         </div>
                     </div>
                 @endauth
@@ -129,12 +129,12 @@
     @include('user.partials.pizzas')
 </div>
 
-<footer>
+<footer id="footer-section">
     <div class="container">
         <div class="row">
             <div class="col-4">
                 <h3 class="name_website">PIZZA COMPANY</h3>
-                <p>Hotline: 1900 1234 - Giao hàng nhanh tận nơi</p>
+                <p>📞Hotline: 1900 1234 - Giao hàng nhanh tận nơi</p>
             </div>
             <div class="col-4">
                 <h3 class="title">GIỚI THIỆU</h3>
@@ -156,5 +156,28 @@
 
 <script src="{{ asset('js/slide.js') }}"></script>
 <script src="{{ asset('js/login.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Lắng nghe tất cả links có class smooth-scroll
+    const smoothScrollLinks = document.querySelectorAll('.smooth-scroll');
+    
+    smoothScrollLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault(); // Ngăn chặn hành vi mặc định
+            
+            const targetId = this.getAttribute('href');
+            const targetElement = document.querySelector(targetId);
+            
+            if (targetElement) {
+                // Smooth scroll xuống target element
+                targetElement.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+});
+</script>
 </body>
 </html>
