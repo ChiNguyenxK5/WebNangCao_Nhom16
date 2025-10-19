@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 
 class PizzaController extends Controller
 {
-    // Trang user — hiển thị danh sách pizza
     public function index(Request $request)
     {
         $selectedTopping = $request->get('topping', 'all');
@@ -20,7 +19,6 @@ class PizzaController extends Controller
 
         $pizzas = $query->get();
 
-        // Lấy danh sách toppings từ database
         $toppings = Pizza::select('topping')
             ->whereNotNull('topping')
             ->distinct()
@@ -30,14 +28,13 @@ class PizzaController extends Controller
 
         return view('user.home', compact('pizzas', 'toppings', 'selectedTopping'));
     }
-    // Trang admin — quản lý pizza
+
     public function adminIndex()
     {
         $pizzas = Pizza::all();
         return view('admin.pizzas.index', compact('pizzas'));
     }
 
-    // Thêm mới
     public function store(Request $request)
     {
         $data = $request->validate([
@@ -53,20 +50,17 @@ class PizzaController extends Controller
             'available' => 'boolean',
         ]);
 
-        // Handle image upload
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time() . '_' . $image->getClientOriginalName();
             $image->move(public_path('uploads'), $imageName);
             $data['image_url'] = 'uploads/' . $imageName;
         } else {
-            $data['image_url'] = 'uploads/default-pizza.jpg'; // Default image
+            $data['image_url'] = 'uploads/default-pizza.jpg';
         }
 
-        // Remove 'image' from data array as it's not a database field
         unset($data['image']);
 
-        // ensure available defaults to true if not provided
         if (! array_key_exists('available', $data)) {
             $data['available'] = true;
         }
@@ -75,7 +69,6 @@ class PizzaController extends Controller
         return redirect()->back()->with('success', 'Đã thêm pizza mới!');
     }
 
-    // Cập nhật
     public function update(Request $request, Pizza $pizza)
     {
         $data = $request->validate([
@@ -91,9 +84,7 @@ class PizzaController extends Controller
             'available' => 'boolean',
         ]);
 
-        // Handle image upload
         if ($request->hasFile('image')) {
-            // Delete old image if exists
             if ($pizza->image_url && file_exists(public_path($pizza->image_url))) {
                 unlink(public_path($pizza->image_url));
             }
@@ -104,10 +95,8 @@ class PizzaController extends Controller
             $data['image_url'] = 'uploads/' . $imageName;
         }
 
-        // Remove 'image' from data array as it's not a database field
         unset($data['image']);
 
-        // ensure available defaults to current value if not provided
         if (! array_key_exists('available', $data)) {
             $data['available'] = false;
         }
@@ -116,10 +105,10 @@ class PizzaController extends Controller
         return redirect()->back()->with('success', 'Cập nhật pizza thành công!');
     }
 
-    // Xóa
     public function destroy(Pizza $pizza)
     {
-        // Delete image file if exists
+        $pizzaName = $pizza->name;
+
         if ($pizza->image_url && $pizza->image_url !== 'uploads/default-pizza.jpg') {
             $imagePath = public_path($pizza->image_url);
             if (file_exists($imagePath)) {
@@ -128,6 +117,11 @@ class PizzaController extends Controller
         }
 
         $pizza->delete();
-        return redirect()->back()->with('success', 'Đã xóa pizza "' . $pizza->name . '" thành công!');
+
+        if (request()->is('dashboard') || str_contains(request()->url(), 'dashboard')) {
+            return redirect()->route('admin.dashboard')->with('success', 'Đã xóa pizza "' . $pizzaName . '" thành công!');
+        } else {
+            return redirect()->route('admin.pizzas')->with('success', 'Đã xóa pizza "' . $pizzaName . '" thành công!');
+        }
     }
 }

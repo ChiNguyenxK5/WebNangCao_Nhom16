@@ -99,7 +99,7 @@
                     <div class="pizza-cart">
                         <div class="pizza-cart-icon" id="popup_card">
                             <div class="red-cart-icon">🛒</div>
-                            <span class="cart-count">0</span>
+                            <span class="cart-count"></span>
                         </div>
                     </div>
                 @endauth
@@ -129,7 +129,7 @@
     @include('user.partials.pizzas')
 </div>
 
-<footer id="footer-section">
+<<footer id="footer-section">
     <div class="container">
         <div class="row">
             <div class="col-4">
@@ -153,9 +153,9 @@
         </div>
     </div>
 </footer>
-
 <script src="{{ asset('js/slide.js') }}"></script>
 <script src="{{ asset('js/login.js') }}"></script>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Lắng nghe tất cả links có class smooth-scroll
@@ -178,6 +178,5 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
-</script>
-</body>
+</script></body>
 </html>
