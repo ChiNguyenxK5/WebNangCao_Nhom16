@@ -6,6 +6,21 @@ use Symfony\Component\Console\Input\ArgvInput;
 
 define('LARAVEL_START', microtime(true));
 
+// Kiểm tra các thư mục và file quan trọng
+if (!file_exists(__DIR__.'/vendor') || !file_exists(__DIR__.'/vendor/autoload.php')) {
+    die(
+        "Thư mục vendor không tồn tại hoặc không đầy đủ.\n".
+        "Vui lòng chạy: composer install\n"
+    );
+}
+
+if (!file_exists(__DIR__.'/bootstrap/app.php')) {
+    die(
+        "File bootstrap/app.php không tồn tại.\n".
+        "Có thể project Laravel chưa được cài đặt đúng cách.\n"
+    );
+}
+
 // Register the Composer autoloader...
 require __DIR__.'/vendor/autoload.php';
 

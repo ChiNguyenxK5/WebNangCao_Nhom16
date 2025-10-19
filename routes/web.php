@@ -6,6 +6,8 @@ use App\Http\Controllers\PizzaController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileUserController;
 use App\Models\Pizza;
+use App\Models\Order;
+use App\Http\Controllers\OrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -45,5 +47,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile/user', [ProfileUserController::class, 'show'])->name('profile.user.show');
     Route::put('/profile/user', [ProfileUserController::class, 'update'])->name('profile.user.update');
 });
+// Routes đặt hàng
+Route::get('/pizzas/{pizza}/order', [OrderController::class, 'create'])->name('orders.create');
+Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
+// Hiển thị chi tiết đơn hàng
+Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
 
 require __DIR__ . '/auth.php';
