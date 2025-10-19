@@ -69,8 +69,8 @@
                             <a href="{{ route('profile.user.show') }}" class="pizza-dropdown-item">
                                 <span>Thông tin cá nhân</span>
                             </a>
-                            <a href="#" class="pizza-dropdown-item">
-                                <span>Chi tiết đơn hàng</span>
+                            <a href="{{ route('orders.index') }}" class="pizza-dropdown-item">
+                                <span>Đơn hàng của tôi</span>
                             </a>
                             <div class="dropdown-divider"></div>
                             <form method="POST" action="{{ route('logout') }}">

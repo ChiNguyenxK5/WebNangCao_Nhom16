@@ -25,6 +25,25 @@ class Order extends Model
         'notes',
     ];
 
+    protected $casts = [
+        'subtotal' => 'decimal:2',
+        'total' => 'decimal:2',
+        'discount_amount' => 'decimal:2',
+        'created_at' => 'datetime',
+    ];
+
+    public function getStatusTextAttribute()
+    {
+        $statuses = [
+            'pending' => 'Đang xử lý',
+            'processing' => 'Đang chuẩn bị',
+            'completed' => 'Hoàn thành',
+            'cancelled' => 'Đã hủy',
+        ];
+
+        return $statuses[$this->status] ?? 'Không xác định';
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);

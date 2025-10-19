@@ -10,6 +10,17 @@ use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
+    public function index()
+    {
+        $orders = Order::where('user_id', Auth::id())
+                      ->where('status', '!=', 'cancelled')
+                      ->with('items.pizza')
+                      ->orderBy('created_at', 'desc')
+                      ->get();
+        
+        return view('user.orders.index', compact('orders'));
+    }
+
     public function create(Pizza $pizza)
     {
         return view('orders.create', compact('pizza'));
@@ -65,18 +76,28 @@ class OrderController extends Controller
 
     public function show(Order $order)
     {
-        $order->loadMissing('items.pizza', 'user');
-        return view('orders.show', compact('order'));
+        if ($order->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized');
+        }
+        
+        return view('user.orders.show', compact('order'));
     }
 
     public function update(Request $request, Order $order)
     {
-        $validated = $request->validate([
-            'status' => 'required|in:pending,processing,completed,cancelled'
+        if ($order->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized');
+        }
+
+        $request->validate([
+            'action' => 'required|string|in:cancel'
         ]);
 
-        $order->update($validated);
+        if ($request->action === 'cancel' && $order->status === 'pending') {
+            $order->update(['status' => 'cancelled']);
+            return redirect()->route('orders.index')->with('success', 'Đơn hàng đã được hủy thành công!');
+        }
 
-        return back()->with('success', 'Cập nhật trạng thái đơn hàng thành công');
+        return redirect()->back()->with('error', 'Không thể thực hiện hành động này!');
     }
 }
