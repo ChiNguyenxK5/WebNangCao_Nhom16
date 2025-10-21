@@ -82,11 +82,6 @@ class OrderController extends Controller
             abort(403, 'Unauthorized');
         }
         
-        // Auto convert "ordered" back to "processing" when viewing details
-        if ($order->status === 'ordered') {
-            $order->update(['status' => 'processing']);
-        }
-        
         $order->loadMissing('items.pizza', 'user');
         $pizzas = Pizza::all();
         return view('user.orders.show', compact('order', 'pizzas'));
@@ -235,14 +230,14 @@ class OrderController extends Controller
             'action' => 'required|string|in:cancel,place'
         ]);
 
-        if ($request->action === 'cancel' && in_array($order->status, ['pending', 'ordered', 'processing'])) {
+        if ($request->action === 'cancel' && in_array($order->status, ['pending', 'processing'])) {
             $order->update(['status' => 'cancelled']);
             return redirect()->route('orders.index')->with('success', 'Giỏ hàng đã được hủy thành công!');
         }
 
-        if ($request->action === 'place' && in_array($order->status, ['pending', 'processing'])) {
-            // user confirms placing the order -> mark as ordered
-            $order->update(['status' => 'ordered']);
+        if ($request->action === 'place' && $order->status === 'pending') {
+            // user confirms placing the order -> mark as processing
+            $order->update(['status' => 'processing']);
             return redirect()->route('orders.index')->with('success', 'Đặt hàng thành công!');
         }
 
@@ -254,14 +249,8 @@ class OrderController extends Controller
             abort(403, 'Unauthorized');
         }
 
-        if (!in_array($order->status, ['ordered', 'processing'])) {
-            return redirect()->back()->with('error', 'Chỉ có thể thay đổi đơn đã đặt hàng hoặc đang xử lý.');
-        }
-
-        // Set to processing (đang xử lý) to allow edits if not already
-        if ($order->status === 'ordered') {
-            $order->update(['status' => 'processing']);
-            return redirect()->route('orders.show', $order->id)->with('success', 'Đơn hàng đã được chuyển sang trạng thái đang xử lý — bạn có thể chỉnh sửa.');
+        if ($order->status !== 'processing') {
+            return redirect()->back()->with('error', 'Chỉ có thể sửa đơn đang xử lý.');
         }
 
         // Already in processing, just redirect to show page
@@ -383,7 +372,7 @@ class OrderController extends Controller
             'all' => Order::count(),
             'pending' => Order::where('status', 'pending')->count(),
             'processing' => Order::where('status', 'processing')->count(),
-            'ordered' => Order::where('status', 'ordered')->count(),
+            'completed' => Order::where('status', 'completed')->count(),
             'cancelled' => Order::where('status', 'cancelled')->count(),
         ];
 
@@ -405,12 +394,28 @@ class OrderController extends Controller
     public function updateStatus(Request $request, Order $order)
     {
         $request->validate([
-            'status' => 'required|in:pending,processing,ordered,cancelled',
+            'status' => 'required|in:pending,processing,completed,cancelled',
         ]);
 
         $order->status = $request->status;
         $order->save();
 
         return back()->with('success', 'Đã cập nhật trạng thái đơn hàng');
+    }
+
+    public function completeOrder(Order $order)
+    {
+        if ($order->status === 'cancelled') {
+            return back()->with('error', 'Không thể hoàn thành đơn hàng đã bị hủy');
+        }
+
+        if ($order->status === 'completed') {
+            return back()->with('info', 'Đơn hàng đã được hoàn thành trước đó');
+        }
+
+        $order->status = 'completed';
+        $order->save();
+
+        return back()->with('success', 'Đã hoàn thành đơn hàng #' . $order->id);
     }
 }

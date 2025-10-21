@@ -9,23 +9,7 @@
 </head>
 <body class="bg-gray-50">
     <div class="flex min-h-screen">
-        <!-- Sidebar -->
-        <aside class="w-64 bg-white shadow-lg">
-            <div class="p-6 border-b">
-                <h1 class="text-2xl font-bold text-gray-800">Admin Panel</h1>
-            </div>
-            <nav class="p-4 space-y-2">
-                <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 text-gray-700 hover:text-gray-900 font-medium">
-                    <i class="fas fa-chart-line"></i> Tổng quan
-                </a>
-                <a href="{{ route('admin.pizzas') }}" class="flex items-center gap-3 text-gray-700 hover:text-gray-900 font-medium">
-                    <i class="fas fa-pizza-slice"></i> Quản lý Pizza
-                </a>
-                <a href="{{ route('admin.orders.index') }}" class="flex items-center gap-3 text-orange-600 hover:text-orange-700 font-bold">
-                    <i class="fas fa-shopping-cart"></i> Quản lý đơn hàng
-                </a>
-            </nav>
-        </aside>
+        @include('admin.partials.sidebar')
 
         <!-- Main Content -->
         <main class="flex-1 p-8">
@@ -92,7 +76,7 @@
                                     $statusConfig = [
                                         'pending' => ['text' => 'Chờ xử lý', 'class' => 'bg-yellow-100 text-yellow-800'],
                                         'processing' => ['text' => 'Đang xử lý', 'class' => 'bg-blue-100 text-blue-800'],
-                                        'ordered' => ['text' => 'Đã đặt hàng', 'class' => 'bg-green-100 text-green-800'],
+                                        'completed' => ['text' => 'Hoàn thành', 'class' => 'bg-emerald-100 text-emerald-800'],
                                         'cancelled' => ['text' => 'Đã hủy', 'class' => 'bg-red-100 text-red-800'],
                                     ];
                                     $config = $statusConfig[$order->status] ?? ['text' => $order->status, 'class' => 'bg-gray-100 text-gray-800'];
@@ -119,7 +103,7 @@
                             <select name="status" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent">
                                 <option value="pending" {{ $order->status == 'pending' ? 'selected' : '' }}>Chờ xử lý</option>
                                 <option value="processing" {{ $order->status == 'processing' ? 'selected' : '' }}>Đang xử lý</option>
-                                <option value="ordered" {{ $order->status == 'ordered' ? 'selected' : '' }}>Đã đặt hàng</option>
+                                <option value="completed" {{ $order->status == 'completed' ? 'selected' : '' }}>Hoàn thành</option>
                                 <option value="cancelled" {{ $order->status == 'cancelled' ? 'selected' : '' }}>Đã hủy</option>
                             </select>
                         </div>

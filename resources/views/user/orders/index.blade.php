@@ -72,8 +72,7 @@
                             </div>
                             @php
                                 $statusLabels = [
-                                    'pending' => 'Đang xử lý',
-                                    'ordered' => 'Đã đặt hàng',
+                                    'pending' => 'Chờ xử lý',
                                     'processing' => 'Đang xử lý',
                                     'completed' => 'Hoàn thành',
                                     'cancelled' => 'Đã hủy',

@@ -12,45 +12,7 @@
 
 <body class="bg-gray-50 text-gray-900 flex min-h-screen">
 
-    {{-- Sidebar --}}
-    <aside class="w-72 border-r border-gray-200 bg-white flex flex-col justify-between">
-        <div>
-            <div class="flex items-center gap-3 px-6 py-5 border-b border-gray-200">
-                <img src="{{ asset('uploads/logopizza (1).png') }}" class="w-10 h-10 object-contain" />
-                <span class="font-semibold text-lg text-gray-900">Pizza Company</span>
-            </div>
-            <nav class="mt-6 flex flex-col gap-6 px-6">
-                <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 text-gray-700 hover:text-gray-900 font-medium">
-                    <i class="fas fa-th-large"></i> Tổng quan
-                </a>
-                <a href="{{ route('admin.pizzas') }}" class="flex items-center gap-3 {{ request()->routeIs('admin.pizzas') ? 'text-indigo-600 font-semibold' : 'text-gray-700 hover:text-gray-900 font-medium' }}">
-                    <i class="fas fa-pizza-slice"></i> Quản lý Pizza
-                </a>
-                <a href="{{ route('admin.orders.index') }}" class="flex items-center gap-3 {{ request()->routeIs('admin.orders.index') ? 'text-indigo-600 font-semibold' : 'text-gray-700 hover:text-gray-900 font-medium' }}">
-                    <i class="fas fa-shopping-cart"></i> Quản lý đơn hàng
-                </a>
-            </nav>
-        </div>
-
-        <div class="px-6 py-5 border-t border-gray-200">
-            <div class="flex items-center gap-3 mb-3">
-                <div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600">
-                    <i class="fas fa-user-shield"></i>
-                </div>
-                <div>
-                    <p class="text-gray-900 font-semibold text-sm">{{ auth()->user()->name }}</p>
-                    <p class="text-gray-500 text-xs">Quản trị viên</p>
-                </div>
-            </div>
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button type="submit"
-                    class="w-full flex items-center justify-center gap-2 border border-gray-300 rounded-md py-2 text-gray-700 font-medium text-sm hover:bg-gray-50 transition-colors">
-                    <i class="fas fa-sign-out-alt"></i> Đăng xuất
-                </button>
-            </form>
-        </div>
-    </aside>
+    @include('admin.partials.sidebar')
 
     {{-- Nội dung chính --}}
     <main class="flex-1 p-6">
@@ -223,9 +185,9 @@
                        class="px-6 py-4 text-center {{ request('status') == 'processing' ? 'border-b-2 border-indigo-500 text-indigo-600 font-semibold' : 'text-gray-600 hover:text-gray-900' }}">
                         Đang xử lý ({{ $statusCounts['processing'] }})
                     </a>
-                    <a href="{{ route('admin.orders.index', ['status' => 'ordered']) }}" 
-                       class="px-6 py-4 text-center {{ request('status') == 'ordered' ? 'border-b-2 border-indigo-500 text-indigo-600 font-semibold' : 'text-gray-600 hover:text-gray-900' }}">
-                        Đã đặt hàng ({{ $statusCounts['ordered'] }})
+                    <a href="{{ route('admin.orders.index', ['status' => 'completed']) }}" 
+                       class="px-6 py-4 text-center {{ request('status') == 'completed' ? 'border-b-2 border-indigo-500 text-indigo-600 font-semibold' : 'text-gray-600 hover:text-gray-900' }}">
+                        Hoàn thành ({{ $statusCounts['completed'] }})
                     </a>
                     <a href="{{ route('admin.orders.index', ['status' => 'cancelled']) }}" 
                        class="px-6 py-4 text-center {{ request('status') == 'cancelled' ? 'border-b-2 border-indigo-500 text-indigo-600 font-semibold' : 'text-gray-600 hover:text-gray-900' }}">
@@ -291,7 +253,7 @@
                                             $statusConfig = [
                                                 'pending' => ['text' => 'Chờ xử lý', 'class' => 'bg-yellow-100 text-yellow-800'],
                                                 'processing' => ['text' => 'Đang xử lý', 'class' => 'bg-blue-100 text-blue-800'],
-                                                'ordered' => ['text' => 'Đã đặt hàng', 'class' => 'bg-green-100 text-green-800'],
+                                                'completed' => ['text' => 'Hoàn thành', 'class' => 'bg-emerald-100 text-emerald-800'],
                                                 'cancelled' => ['text' => 'Đã hủy', 'class' => 'bg-red-100 text-red-800'],
                                             ];
                                             $config = $statusConfig[$order->status] ?? ['text' => $order->status, 'class' => 'bg-gray-100 text-gray-800'];
@@ -304,10 +266,25 @@
                                         {{ $order->created_at->format('d/m/Y H:i') }}
                                     </td>
                                     <td class="px-6 py-4 text-right">
-                                        <button onclick="viewOrderDetail({{ $order->id }})" 
-                                                class="text-indigo-600 hover:text-indigo-900 font-medium">
-                                            <i class="fas fa-eye mr-1"></i>Xem
-                                        </button>
+                                        <div class="flex items-center justify-end gap-2">
+                                            @if($order->status !== 'cancelled' && $order->status !== 'completed')
+                                                <form method="POST" action="{{ route('admin.orders.complete', $order) }}" class="inline">
+                                                    @csrf
+                                                    @method('PATCH')
+                                                    <button type="submit" 
+                                                            onclick="return confirm('✅ Xác nhận hoàn thành đơn hàng #{{ $order->id }}?')"
+                                                            class="inline-flex items-center gap-1 px-3 py-1.5 bg-gradient-to-r from-green-500 to-emerald-600 text-white text-sm font-medium rounded-lg hover:from-green-600 hover:to-emerald-700 shadow-sm hover:shadow-md transition-all duration-200 transform hover:scale-105">
+                                                        <i class="fas fa-check-circle"></i>
+                                                        <span>Hoàn thành</span>
+                                                    </button>
+                                                </form>
+                                            @endif
+                                            
+                                            <button onclick="viewOrderDetail({{ $order->id }})" 
+                                                    class="text-indigo-600 hover:text-indigo-900 font-medium">
+                                                <i class="fas fa-eye mr-1"></i>Xem
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             @empty
@@ -614,6 +591,7 @@
             fetch(`/admin/orders/${orderId}/detail`)
                 .then(response => response.json())
                 .then(data => {
+                    console.log('Order data:', data); // Debug log
                     displayOrderDetail(data);
                 })
                 .catch(error => {
@@ -635,7 +613,7 @@
             const statusConfig = {
                 'pending': { text: 'Chờ xử lý', class: 'bg-yellow-100 text-yellow-800' },
                 'processing': { text: 'Đang xử lý', class: 'bg-blue-100 text-blue-800' },
-                'ordered': { text: 'Đã đặt hàng', class: 'bg-green-100 text-green-800' },
+                'completed': { text: 'Hoàn thành', class: 'bg-emerald-100 text-emerald-800' },
                 'cancelled': { text: 'Đã hủy', class: 'bg-red-100 text-red-800' }
             };
             const config = statusConfig[order.status] || { text: order.status, class: 'bg-gray-100 text-gray-800' };
@@ -648,18 +626,23 @@
             
             let itemsHtml = '';
             order.items.forEach(item => {
+                console.log('Item data:', item); // Debug log
+                
+                // Handle different possible field names
                 const size = item.pizza_size || item.size || 'medium';
                 const unitPrice = parseFloat(item.unit_price || item.price || 0);
-                const totalPrice = parseFloat(item.total_price || (unitPrice * item.quantity) || 0);
+                const quantity = parseInt(item.quantity || 0);
+                const totalPrice = parseFloat(item.total_price || (unitPrice * quantity) || 0);
+                const pizzaName = item.pizza_name || (item.pizza ? item.pizza.name : 'Không xác định');
                 
                 itemsHtml += `
                     <tr class="hover:bg-gray-50">
                         <td class="px-4 py-4">
                             <div class="flex items-center gap-3">
                                 ${item.pizza && item.pizza.image ? `
-                                    <img src="/${item.pizza.image}" alt="${item.pizza_name}" class="w-16 h-16 object-cover rounded">
+                                    <img src="/${item.pizza.image}" alt="${pizzaName}" class="w-16 h-16 object-cover rounded">
                                 ` : ''}
-                                <div class="font-medium text-gray-900">${item.pizza_name}</div>
+                                <div class="font-medium text-gray-900">${pizzaName}</div>
                             </div>
                         </td>
                         <td class="px-4 py-4 text-center">
@@ -667,7 +650,7 @@
                                 ${sizeLabels[size] || size}
                             </span>
                         </td>
-                        <td class="px-4 py-4 text-center font-medium">${item.quantity}</td>
+                        <td class="px-4 py-4 text-center font-medium">${quantity}</td>
                         <td class="px-4 py-4 text-right">${new Intl.NumberFormat('vi-VN').format(unitPrice)}đ</td>
                         <td class="px-4 py-4 text-right font-semibold">${new Intl.NumberFormat('vi-VN').format(totalPrice)}đ</td>
                     </tr>
@@ -737,7 +720,7 @@
                         <select name="status" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
                             <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Chờ xử lý</option>
                             <option value="processing" ${order.status === 'processing' ? 'selected' : ''}>Đang xử lý</option>
-                            <option value="ordered" ${order.status === 'ordered' ? 'selected' : ''}>Đã đặt hàng</option>
+                            <option value="completed" ${order.status === 'completed' ? 'selected' : ''}>Hoàn thành</option>
                             <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>Đã hủy</option>
                         </select>
                         <button type="submit" class="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">

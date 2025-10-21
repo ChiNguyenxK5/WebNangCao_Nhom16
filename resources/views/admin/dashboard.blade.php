@@ -3,375 +3,339 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản lý sản phẩm Pizza</title>
+    <title>Tổng quan - Admin Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body class="bg-gray-50 text-gray-900 flex min-h-screen">
 
-    {{-- Sidebar --}}
-    <aside class="w-72 border-r border-gray-200 bg-white flex flex-col justify-between">
-        <div>
-            <div class="flex items-center gap-3 px-6 py-5 border-b border-gray-200">
-                <img src="{{ asset('uploads/logopizza (1).png') }}" class="w-10 h-10 object-contain" />
-                <span class="font-semibold text-lg text-gray-900">Pizza Company</span>
-            </div>
-            <nav class="mt-6 flex flex-col gap-6 px-6">
-                <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 text-gray-900 font-semibold">
-                    <i class="fas fa-th-large"></i> Tổng quan
-                </a>
-                <a href="{{ route('admin.pizzas') }}" class="flex items-center gap-3 text-indigo-600 font-semibold">
-                    <i class="fas fa-box"></i> Sản phẩm
-                </a>
-                <a href="{{ route('admin.orders.index') }}" class="flex items-center gap-3 text-gray-700 hover:text-gray-900 font-medium">
-                    <i class="fas fa-shopping-cart"></i> Quản lý đơn hàng
-                </a>
-            </nav>
-        </div>
-
-        <div class="px-6 py-5 border-t border-gray-200">
-            <div class="flex items-center gap-3 mb-3">
-                <div class="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-gray-600">
-                    <i class="fas fa-user"></i>
-                </div>
-                <div>
-                    <p class="text-gray-900 font-semibold text-sm">{{ auth()->user()->name }}</p>
-                    <p class="text-gray-500 text-xs">Quản trị viên</p>
-                </div>
-            </div>
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button type="submit"
-                    class="w-full flex items-center justify-center gap-2 border border-gray-300 rounded-md py-2 text-gray-900 font-semibold text-sm hover:bg-gray-100">
-                    <i class="fas fa-sign-out-alt"></i> Đăng xuất
-                </button>
-            </form>
-        </div>
-    </aside>
+    @include('admin.partials.sidebar')
 
     {{-- Nội dung chính --}}
     <main class="flex-1 p-6">
         <div class="mb-4 text-sm text-gray-600">Tổng quan /
-            <span class="text-indigo-600">Sản phẩm</span>
+            <span class="text-indigo-600">Dashboard</span>
         </div>
 
         <h1 class="text-3xl font-extrabold text-gray-900 flex items-center gap-2 mb-1">
-            <i class="fas fa-box text-indigo-600"></i> Quản lý sản phẩm Pizza
+            <i class="fas fa-chart-line text-indigo-600"></i> Tổng quan hệ thống
         </h1>
-        <p class="text-gray-700 mb-6">Quản lý danh sách sản phẩm pizza của cửa hàng</p>
+        <p class="text-gray-700 mb-6">Thống kê tổng quan về đơn hàng và sản phẩm</p>
 
-        {{-- Thông báo --}}
-        @if (session('success'))
-            <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-md mb-6 flex items-center gap-2">
-                <i class="fas fa-check-circle text-green-500"></i>
-                <span>{{ session('success') }}</span>
+        {{-- Statistics Cards --}}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+            {{-- Total Orders --}}
+            <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-lg p-6 text-white">
+                <div class="flex items-center justify-between mb-2">
+                    <div>
+                        <p class="text-blue-100 text-sm font-medium">Tổng đơn hàng</p>
+                        <h3 class="text-3xl font-bold">{{ $totalOrders }}</h3>
+                    </div>
+                    <div class="bg-blue-400 bg-opacity-30 rounded-full p-4">
+                        <i class="fas fa-shopping-cart text-2xl"></i>
+                    </div>
+                </div>
+                <p class="text-blue-100 text-xs">Tất cả đơn hàng trong hệ thống</p>
             </div>
-        @endif
 
-        @if (session('error'))
-            <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md mb-6 flex items-center gap-2">
-                <i class="fas fa-exclamation-circle text-red-500"></i>
-                <span>{{ session('error') }}</span>
+            {{-- Total Revenue --}}
+            <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow-lg p-6 text-white">
+                <div class="flex items-center justify-between mb-2">
+                    <div>
+                        <p class="text-green-100 text-sm font-medium">Tổng doanh thu</p>
+                        <h3 class="text-3xl font-bold">{{ number_format($totalRevenue / 1000, 0) }}K</h3>
+                    </div>
+                    <div class="bg-green-400 bg-opacity-30 rounded-full p-4">
+                        <i class="fas fa-dollar-sign text-2xl"></i>
+                    </div>
+                </div>
+                <p class="text-green-100 text-xs">{{ number_format($totalRevenue, 0, ',', '.') }}đ</p>
             </div>
-        @endif
 
-        {{-- Nút thêm --}}
-        <div class="mb-6">
-            <a href="{{ route('admin.pizzas') }}"
-                class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 flex items-center gap-2 w-fit">
-                <i class="fas fa-plus"></i> Thêm sản phẩm mới
-            </a>
+            {{-- Completed Orders --}}
+            <div class="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-lg shadow-lg p-6 text-white">
+                <div class="flex items-center justify-between mb-2">
+                    <div>
+                        <p class="text-emerald-100 text-sm font-medium">Đơn hoàn thành</p>
+                        <h3 class="text-3xl font-bold">{{ $orderStats['completed'] }}</h3>
+                    </div>
+                    <div class="bg-emerald-400 bg-opacity-30 rounded-full p-4">
+                        <i class="fas fa-check-circle text-2xl"></i>
+                    </div>
+                </div>
+                <p class="text-emerald-100 text-xs">Đơn hàng đã hoàn thành</p>
+            </div>
+
+            {{-- Total Pizzas --}}
+            <div class="bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg shadow-lg p-6 text-white">
+                <div class="flex items-center justify-between mb-2">
+                    <div>
+                        <p class="text-orange-100 text-sm font-medium">Tổng sản phẩm</p>
+                        <h3 class="text-3xl font-bold">{{ $totalPizzas }}</h3>
+                    </div>
+                    <div class="bg-orange-400 bg-opacity-30 rounded-full p-4">
+                        <i class="fas fa-pizza-slice text-2xl"></i>
+                    </div>
+                </div>
+                <p class="text-orange-100 text-xs">Sản phẩm pizza trong kho</p>
+            </div>
         </div>
 
-        {{-- Bảng sản phẩm --}}
-        <section class="bg-white border border-gray-200 rounded-lg shadow-sm">
-            <header class="flex justify-between items-center px-6 py-4 border-b border-gray-200">
-                <h2 class="font-semibold text-gray-900 flex items-center gap-2">
-                    <i class="fas fa-list"></i> Danh sách Pizza
+        {{-- Charts Section --}}
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            {{-- Order Status Chart --}}
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    <i class="fas fa-chart-pie text-indigo-600"></i>
+                    Thống kê trạng thái đơn hàng
                 </h2>
-                <span class="text-sm text-gray-500">Tổng cộng: {{ count($pizzas) }} pizza</span>
-            </header>
-
-            <div class="overflow-x-auto">
-                <table class="w-full text-left text-gray-600 text-sm">
-                    <thead class="border-b border-gray-200 bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-4 font-semibold text-gray-700 uppercase tracking-wide">Mã</th>
-                            <th class="px-6 py-4 font-semibold text-gray-700 uppercase tracking-wide">Pizza</th>
-                            <th class="px-6 py-4 font-semibold text-gray-700 uppercase tracking-wide">Thông tin</th>
-                            <th class="px-6 py-4 font-semibold text-gray-700 uppercase tracking-wide">Giá</th>
-                            <th class="px-6 py-4 font-semibold text-gray-700 uppercase tracking-wide">Trạng thái</th>
-                            <th class="px-6 py-4 font-semibold text-gray-700 uppercase tracking-wide text-right">Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($pizzas as $pizza)
-                        <tr class="hover:bg-gray-50 border-b border-gray-100 transition-colors">
-                            <td class="px-6 py-4">
-                                <span class="font-medium text-gray-900">#{{ str_pad($pizza->id, 3, '0', STR_PAD_LEFT) }}</span>
-                            </td>
-                            <td class="px-6 py-4">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
-                                        @if($pizza->image_url && file_exists(public_path($pizza->image_url)))
-                                            <img src="{{ asset($pizza->image_url) }}" 
-                                                 class="w-full h-full object-cover" alt="{{ $pizza->name }}">
-                                        @else
-                                            <img src="{{ asset('uploads/default-pizza.jpg') }}" 
-                                                 class="w-full h-full object-cover" alt="{{ $pizza->name }}">
-                                        @endif
-                                    </div>
-                                    <div>
-                                        <p class="font-medium text-gray-900">{{ $pizza->name }}</p>
-                                        @if($pizza->size)
-                                            <p class="text-sm text-gray-500">Size {{ $pizza->size }}</p>
-                                        @endif
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4">
-                                <div class="max-w-xs">
-                                    @if($pizza->description)
-                                        <p class="text-gray-600 text-sm">{{ Str::limit($pizza->description, 60) }}</p>
-                                    @endif
-                                    @if($pizza->type || $pizza->base || $pizza->topping)
-                                        <div class="flex flex-wrap gap-1 mt-1">
-                                            @if($pizza->type)
-                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
-                                                    <i class="fas fa-pizza-slice mr-1"></i>{{ $pizza->type }}
-                                                </span>
-                                            @endif
-                                            @if($pizza->base)
-                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
-                                                    {{ $pizza->base }}
-                                                </span>
-                                            @endif
-                                            @if($pizza->size)
-                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                                    Size {{ $pizza->size }}
-                                                </span>
-                                            @endif
-                                        </div>
-                                    @else
-                                        <span class="text-gray-400 text-sm italic">Chưa phân loại</span>
-                                    @endif
-                                </div>
-                            </td>
-                            <td class="px-6 py-4">
-                                <span class="text-lg font-semibold text-gray-900">{{ number_format($pizza->price) }}₫</span>
-                            </td>
-                            <td class="px-6 py-4">
-                                @if($pizza->available)
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                        <i class="fas fa-check-circle mr-1"></i> Đang bán
-                                    </span>
-                                @else
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                        <i class="fas fa-times-circle mr-1"></i> Đã ẩn
-                                    </span>
-                                @endif
-                            </td>
-                            <td class="px-6 py-4 text-right">
-                                <div class="flex items-center gap-2">
-                                    {{-- Sửa --}}
-                                    <button onclick="document.getElementById('editPizza{{ $pizza->id }}').classList.remove('hidden')" 
-                                        class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
-                                        <i class="fas fa-edit mr-1"></i> Sửa
-                                    </button>
-                                    
-                                    {{-- Xóa --}}
-                                    <button onclick="deletePizza({{ $pizza->id }}, '{{ $pizza->name }}')" 
-                                        class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors">
-                                        <i class="fas fa-trash mr-1"></i> Xóa
-                                    </button>
-                                    
-                                    {{-- Hidden form for delete --}}
-                                    <form id="delete-form-{{ $pizza->id }}" action="{{ route('admin.pizzas.destroy', $pizza->id) }}" method="POST" style="display: none;">
-                                        @csrf
-                                        @method('DELETE')
-                                    </form>
-                                </div>
-
-                                {{-- Modal sửa --}}
-                                <div id="editPizza{{ $pizza->id }}" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                                    <div class="bg-white rounded-lg shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto">
-                                        <div class="px-6 py-4 border-b border-gray-200">
-                                            <h3 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                                                <i class="fas fa-edit text-indigo-600"></i>
-                                                Chỉnh sửa Pizza: {{ $pizza->name }}
-                                            </h3>
-                                        </div>
-                                        
-                                        <form action="{{ route('admin.pizzas.update', $pizza->id) }}" method="POST" enctype="multipart/form-data" class="p-6">
-                                            @csrf
-                                            @method('PUT')
-                                            <div class="space-y-4">
-                                                <div>
-                                                    <label class="block text-sm font-medium text-gray-700 mb-1">Tên Pizza *</label>
-                                                    <input type="text" name="name" value="{{ $pizza->name }}" 
-                                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" required>
-                                                </div>
-                                                
-                                                <div>
-                                                    <label class="block text-sm font-medium text-gray-700 mb-1">Mô tả</label>
-                                                    <textarea name="description" rows="3"
-                                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">{{ $pizza->description }}</textarea>
-                                                </div>
-                                                
-                                                <div class="grid grid-cols-2 gap-4">
-                                                    <div>
-                                                        <label class="block text-sm font-medium text-gray-700 mb-1">Giá *</label>
-                                                        <input type="number" name="price" value="{{ $pizza->price }}" step="1000" 
-                                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" required>
-                                                    </div>
-                                                    <div>
-                                                        <label class="block text-sm font-medium text-gray-700 mb-1">Size</label>
-                                                        <select name="size" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
-                                                            <option value="">Chọn size</option>
-                                                            <option value="S" {{ $pizza->size == 'S' ? 'selected' : '' }}>Size S</option>
-                                                            <option value="M" {{ $pizza->size == 'M' ? 'selected' : '' }}>Size M</option>
-                                                            <option value="L" {{ $pizza->size == 'L' ? 'selected' : '' }}>Size L</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                
-                                                <div>
-                                                    <label class="block text-sm font-medium text-gray-700 mb-1">Ảnh Pizza</label>
-                                                    @if($pizza->image_url && file_exists(public_path($pizza->image_url)))
-                                                        <div class="mb-3">
-                                                            <img src="{{ asset($pizza->image_url) }}" class="w-24 h-24 object-cover rounded-lg border-2 border-gray-200" alt="Ảnh hiện tại">
-                                                            <p class="text-sm text-gray-500 mt-1">Ảnh hiện tại</p>
-                                                        </div>
-                                                    @elseif($pizza->image_url)
-                                                        <div class="mb-3">
-                                                            <div class="w-24 h-24 bg-gray-200 rounded-lg border-2 border-gray-300 flex items-center justify-center">
-                                                                <i class="fas fa-image text-gray-400 text-2xl"></i>
-                                                            </div>
-                                                            <p class="text-sm text-red-500 mt-1">Ảnh không tồn tại</p>
-                                                        </div>
-                                                    @endif
-                                                    <input type="file" name="image" accept="image/*" 
-                                                        class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
-                                                    <p class="text-xs text-gray-500 mt-1">Chọn ảnh mới (để trống nếu giữ ảnh cũ). PNG, JPG, GIF tối đa 2MB</p>
-                                                </div>
-                                                
-                                                <div class="grid grid-cols-2 gap-4">
-                                                    <div>
-                                                        <label class="block text-sm font-medium text-gray-700 mb-1">Đế pizza</label>
-                                                        <input type="text" name="base" value="{{ $pizza->base }}"
-                                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
-                                                    </div>
-                                                    <div>
-                                                        <label class="block text-sm font-medium text-gray-700 mb-1">Loại pizza</label>
-                                                        <input type="text" name="type" value="{{ $pizza->type }}"
-                                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
-                                                    </div>
-                                                </div>
-                                                
-                                                <div>
-                                                    <label class="block text-sm font-medium text-gray-700 mb-1">Topping</label>
-                                                    <input type="text" name="topping" value="{{ $pizza->topping }}"
-                                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
-                                                </div>
-                                                
-                                                <div>
-                                                    <label class="block text-sm font-medium text-gray-700 mb-1">Sốt</label>
-                                                    <input type="text" name="sauce" value="{{ $pizza->sauce }}"
-                                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
-                                                </div>
-                                                
-                                                <div class="flex items-center">
-                                                    <input type="checkbox" name="available" value="1" {{ $pizza->available ? 'checked' : '' }} id="available_{{ $pizza->id }}" 
-                                                        class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
-                                                    <label for="available_{{ $pizza->id }}" class="ml-2 block text-sm text-gray-900">Hiển thị cho khách hàng</label>
-                                                </div>
-                                            </div>
-                                            
-                                            <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-200">
-                                                <button type="button" onclick="document.getElementById('editPizza{{ $pizza->id }}').classList.add('hidden')" 
-                                                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                                    Hủy
-                                                </button>
-                                                <button type="submit" 
-                                                    class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                                    <i class="fas fa-save mr-1"></i> Cập nhật
-                                                </button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="6" class="px-6 py-8 text-center text-gray-500">
-                                <div class="flex flex-col items-center">
-                                    <i class="fas fa-pizza-slice text-4xl text-gray-300 mb-3"></i>
-                                    <p class="text-lg font-medium text-gray-500">Chưa có pizza nào</p>
-                                    <p class="text-sm text-gray-400">Hãy thêm pizza đầu tiên cho cửa hàng của bạn</p>
-                                    <button onclick="document.getElementById('addPizzaModal').classList.remove('hidden')"
-                                        class="mt-3 inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700">
-                                        <i class="fas fa-plus mr-2"></i> Thêm Pizza Đầu Tiên
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                <div class="flex justify-center items-center" style="height: 280px;">
+                    <canvas id="orderStatusChart"></canvas>
+                </div>
             </div>
-        </section>
+
+            {{-- Revenue Summary --}}
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    <i class="fas fa-money-bill-wave text-green-600"></i>
+                    Tổng quan doanh thu
+                </h2>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-4 border border-green-200">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-gray-700 font-medium text-sm">Tổng doanh thu</span>
+                            <i class="fas fa-chart-line text-green-600"></i>
+                        </div>
+                        <p class="text-2xl font-bold text-green-600">{{ number_format($totalRevenue, 0, ',', '.') }}đ</p>
+                        <p class="text-xs text-gray-600 mt-1">Từ {{ $totalOrders }} đơn hàng</p>
+                    </div>
+
+                    @php
+                        $avgOrderValue = $totalOrders > 0 ? $totalRevenue / $totalOrders : 0;
+                        $completedRevenue = \App\Models\Order::where('status', 'completed')->sum('total');
+                    @endphp
+
+                    <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-gray-700 font-medium text-sm">Giá trị TB/đơn</span>
+                            <i class="fas fa-calculator text-blue-600"></i>
+                        </div>
+                        <p class="text-2xl font-bold text-blue-600">{{ number_format($avgOrderValue, 0, ',', '.') }}đ</p>
+                        <p class="text-xs text-gray-600 mt-1">Trung bình mỗi đơn</p>
+                    </div>
+
+                    <div class="bg-emerald-50 rounded-lg p-4 border border-emerald-200">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-gray-700 font-medium text-sm">DT đơn hoàn thành</span>
+                            <i class="fas fa-check-double text-emerald-600"></i>
+                        </div>
+                        <p class="text-2xl font-bold text-emerald-600">{{ number_format($completedRevenue, 0, ',', '.') }}đ</p>
+                        <p class="text-xs text-gray-600 mt-1">{{ $orderStats['completed'] }} đơn</p>
+                    </div>
+
+                    <div class="bg-yellow-50 rounded-lg p-4 border border-yellow-200">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-gray-700 font-medium text-sm">Đơn chưa hoàn thành</span>
+                            <i class="fas fa-clock text-yellow-600"></i>
+                        </div>
+                        <p class="text-2xl font-bold text-yellow-600">{{ $orderStats['pending'] + $orderStats['processing'] }}</p>
+                        <p class="text-xs text-gray-600 mt-1">Chưa hoàn thành</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </main>
+
     <script>
-        // Delete pizza function
-        function deletePizza(pizzaId, pizzaName) {
-            if (confirm(`⚠️ Bạn có chắc muốn xóa pizza "${pizzaName}" không?\n\nHành động này không thể hoàn tác!`)) {
-                document.getElementById('delete-form-' + pizzaId).submit();
-            }
-        }
-        
-        // Close modal when clicking outside
-        window.onclick = function(event) {
-            const addModal = document.getElementById('addPizzaModal');
-            if (event.target == addModal) {
-                addModal.classList.add('hidden');
-            }
+        // Initialize Order Status Doughnut Chart with beautiful design
+        const ctx = document.getElementById('orderStatusChart');
+        if (ctx) {
+            // Create gradient backgrounds for each segment
+            const createGradient = (ctx, color1, color2) => {
+                const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+                gradient.addColorStop(0, color1);
+                gradient.addColorStop(1, color2);
+                return gradient;
+            };
+
+            const chartCtx = ctx.getContext('2d');
             
-            // Close edit modals
-            @foreach($pizzas as $pizza)
-                const editModal{{ $pizza->id }} = document.getElementById('editPizza{{ $pizza->id }}');
-                if (event.target == editModal{{ $pizza->id }}) {
-                    editModal{{ $pizza->id }}.classList.add('hidden');
-                }
-            @endforeach
-        }
-        
-        // File input preview
-        document.addEventListener('change', function(e) {
-            if (e.target.type === 'file') {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        // You can add image preview logic here if needed
-                        console.log('File selected:', file.name);
+            const orderStatusChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Chờ xử lý', 'Đang xử lý', 'Hoàn thành', 'Đã hủy'],
+                    datasets: [{
+                        data: [
+                            {{ $orderStats['pending'] }},
+                            {{ $orderStats['processing'] }},
+                            {{ $orderStats['completed'] }},
+                            {{ $orderStats['cancelled'] }}
+                        ],
+                        backgroundColor: [
+                            createGradient(chartCtx, 'rgba(251, 191, 36, 0.9)', 'rgba(245, 158, 11, 0.9)'),   // yellow gradient
+                            createGradient(chartCtx, 'rgba(96, 165, 250, 0.9)', 'rgba(59, 130, 246, 0.9)'),   // blue gradient
+                            createGradient(chartCtx, 'rgba(52, 211, 153, 0.9)', 'rgba(16, 185, 129, 0.9)'),   // emerald gradient
+                            createGradient(chartCtx, 'rgba(248, 113, 113, 0.9)', 'rgba(239, 68, 68, 0.9)')    // red gradient
+                        ],
+                        borderColor: '#ffffff',
+                        borderWidth: 4,
+                        hoverOffset: 15,
+                        hoverBorderWidth: 4,
+                        hoverBorderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '65%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                font: {
+                                    size: 13,
+                                    weight: '500',
+                                    family: "'Inter', sans-serif"
+                                },
+                                usePointStyle: true,
+                                pointStyle: 'circle',
+                                boxWidth: 10,
+                                boxHeight: 10,
+                                color: '#374151',
+                                generateLabels: function(chart) {
+                                    const data = chart.data;
+                                    if (data.labels.length && data.datasets.length) {
+                                        return data.labels.map((label, i) => {
+                                            const meta = chart.getDatasetMeta(0);
+                                            const value = data.datasets[0].data[i];
+                                            const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                            const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                            
+                                            // Lấy màu solid cho legend
+                                            const colors = [
+                                                'rgb(251, 191, 36)',  // yellow
+                                                'rgb(59, 130, 246)',  // blue
+                                                'rgb(16, 185, 129)',  // emerald
+                                                'rgb(239, 68, 68)'    // red
+                                            ];
+                                            
+                                            return {
+                                                text: `${label}: ${value} (${percentage}%)`,
+                                                fillStyle: colors[i],
+                                                strokeStyle: colors[i],
+                                                lineWidth: 2,
+                                                hidden: meta.data[i].hidden,
+                                                index: i
+                                            };
+                                        });
+                                    }
+                                    return [];
+                                }
+                            },
+                            onClick: function(e, legendItem, legend) {
+                                const index = legendItem.index;
+                                const chart = legend.chart;
+                                const meta = chart.getDatasetMeta(0);
+                                
+                                // Toggle visibility
+                                meta.data[index].hidden = !meta.data[index].hidden;
+                                
+                                // Update chart
+                                chart.update();
+                            }
+                        },
+                        tooltip: {
+                            enabled: true,
+                            backgroundColor: 'rgba(0, 0, 0, 0.85)',
+                            padding: 16,
+                            cornerRadius: 12,
+                            titleFont: {
+                                size: 15,
+                                weight: 'bold',
+                                family: "'Inter', sans-serif"
+                            },
+                            bodyFont: {
+                                size: 14,
+                                family: "'Inter', sans-serif"
+                            },
+                            bodySpacing: 8,
+                            displayColors: true,
+                            boxWidth: 12,
+                            boxHeight: 12,
+                            boxPadding: 6,
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.parsed || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                    return ` ${label}: ${value} đơn (${percentage}%)`;
+                                }
+                            }
+                        }
+                    },
+                    animation: {
+                        animateRotate: true,
+                        animateScale: true,
+                        duration: 1500,
+                        easing: 'easeInOutQuart'
+                    },
+                    interaction: {
+                        mode: 'nearest',
+                        intersect: true
                     }
-                    reader.readAsDataURL(file);
-                }
-            }
-        });
-        
-        // Auto-hide success messages after 5 seconds
-        setTimeout(function() {
-            const alerts = document.querySelectorAll('.bg-green-50');
-            alerts.forEach(function(alert) {
-                alert.style.transition = 'opacity 0.5s';
-                alert.style.opacity = '0';
-                setTimeout(() => alert.remove(), 500);
+                },
+                plugins: [{
+                    // Custom plugin to draw text in center
+                    id: 'centerText',
+                    beforeDraw: function(chart) {
+                        const ctx = chart.ctx;
+                        const chartArea = chart.chartArea;
+                        const width = chart.width;
+                        const height = chart.height;
+                        const total = chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                        
+                        ctx.save();
+                        
+                        // Calculate center of the doughnut (chartArea center)
+                        const centerX = (chartArea.left + chartArea.right) / 2;
+                        const centerY = (chartArea.top + chartArea.bottom) / 2;
+                        
+                        // Main number
+                        const fontSize = Math.round(height / 8);
+                        ctx.font = `bold ${fontSize}px Inter, sans-serif`;
+                        ctx.textBaseline = 'middle';
+                        ctx.textAlign = 'center';
+                        ctx.fillStyle = '#1f2937';
+                        
+                        const text = total.toString();
+                        ctx.fillText(text, centerX, centerY - 10);
+                        
+                        // Subtitle
+                        const subtitleFontSize = Math.round(fontSize * 0.35);
+                        ctx.font = `500 ${subtitleFontSize}px Inter, sans-serif`;
+                        ctx.fillStyle = '#6b7280';
+                        const subtitle = 'Tổng đơn hàng';
+                        ctx.fillText(subtitle, centerX, centerY + 20);
+                        
+                        ctx.restore();
+                    }
+                }]
             });
-        }, 5000);
+
+            // Add hover animation effect
+            ctx.onclick = function(evt) {
+                const activePoints = orderStatusChart.getElementsAtEventForMode(evt, 'nearest', { intersect: true }, false);
+                if (activePoints.length > 0) {
+                    // Add ripple effect or other interactions here if needed
+                }
+            };
+        }
     </script>
 </body>
 </html>

@@ -31,10 +31,18 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin', function () {
         $pizzas = \App\Models\Pizza::with('category')->latest()->get();
         $totalOrders = \App\Models\Order::count();
-        $totalRevenue = \App\Models\Order::sum('total');
+        $totalRevenue = \App\Models\Order::where('status', '!=', 'cancelled')->sum('total');
         $totalPizzas = \App\Models\Pizza::count();
+        
+        // Thống kê theo trạng thái đơn hàng
+        $orderStats = [
+            'pending' => \App\Models\Order::where('status', 'pending')->count(),
+            'processing' => \App\Models\Order::where('status', 'processing')->count(),
+            'completed' => \App\Models\Order::where('status', 'completed')->count(),
+            'cancelled' => \App\Models\Order::where('status', 'cancelled')->count(),
+        ];
 
-        return view('admin.dashboard', compact('pizzas', 'totalOrders', 'totalRevenue', 'totalPizzas'));
+        return view('admin.dashboard', compact('pizzas', 'totalOrders', 'totalRevenue', 'totalPizzas', 'orderStats'));
     })->name('admin.dashboard');
 
     Route::get('/admin/pizzas', [PizzaController::class, 'adminIndex'])->name('admin.pizzas');
@@ -46,6 +54,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/orders', [OrderController::class, 'adminIndex'])->name('admin.orders.index');
     Route::get('/admin/orders/{order}/detail', [OrderController::class, 'getOrderDetail'])->name('admin.orders.detail');
     Route::patch('/admin/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('admin.orders.updateStatus');
+    Route::patch('/admin/orders/{order}/complete', [OrderController::class, 'completeOrder'])->name('admin.orders.complete');
 });
 
 Route::middleware('auth')->group(function () {

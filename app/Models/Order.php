@@ -35,9 +35,8 @@ class Order extends Model
     public function getStatusTextAttribute()
     {
         $statuses = [
-            'pending' => 'Đang xử lý',
-            'processing' => 'Đang chuẩn bị',
-            'ordered' => 'Đã đặt hàng',
+            'pending' => 'Chờ xử lý',
+            'processing' => 'Đang xử lý',
             'completed' => 'Hoàn thành',
             'cancelled' => 'Đã hủy',
         ];
