@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Quản lý Pizza - Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
@@ -22,8 +23,11 @@
                 <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 text-gray-700 hover:text-gray-900 font-medium">
                     <i class="fas fa-th-large"></i> Tổng quan
                 </a>
-                <a href="{{ route('admin.pizzas') }}" class="flex items-center gap-3 text-indigo-600 font-semibold">
+                <a href="{{ route('admin.pizzas') }}" class="flex items-center gap-3 {{ request()->routeIs('admin.pizzas') ? 'text-indigo-600 font-semibold' : 'text-gray-700 hover:text-gray-900 font-medium' }}">
                     <i class="fas fa-pizza-slice"></i> Quản lý Pizza
+                </a>
+                <a href="{{ route('admin.orders.index') }}" class="flex items-center gap-3 {{ request()->routeIs('admin.orders.index') ? 'text-indigo-600 font-semibold' : 'text-gray-700 hover:text-gray-900 font-medium' }}">
+                    <i class="fas fa-shopping-cart"></i> Quản lý đơn hàng
                 </a>
             </nav>
         </div>
@@ -52,22 +56,35 @@
     <main class="flex-1 p-6">
         <div class="mb-4 text-sm text-gray-600">
             <a href="{{ route('admin.dashboard') }}" class="hover:text-indigo-600">Tổng quan</a> /
-            <span class="text-indigo-600">Quản lý Pizza</span>
+            <span class="text-indigo-600">{{ request()->routeIs('admin.orders.index') ? 'Quản lý đơn hàng' : 'Quản lý Pizza' }}</span>
         </div>
 
-        <div class="flex items-center justify-between mb-6">
-            <div>
-                <h1 class="text-3xl font-extrabold text-gray-900 flex items-center gap-3 mb-1">
-                    <i class="fas fa-pizza-slice text-indigo-600"></i> Quản lý Pizza
-                </h1>
-                <p class="text-gray-600">Quản lý danh sách sản phẩm pizza của cửa hàng</p>
+        @if(request()->routeIs('admin.orders.index'))
+            {{-- Quản lý đơn hàng --}}
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h1 class="text-3xl font-extrabold text-gray-900 flex items-center gap-3 mb-1">
+                        <i class="fas fa-shopping-cart text-indigo-600"></i> Quản lý đơn hàng
+                    </h1>
+                    <p class="text-gray-600">Quản lý tất cả đơn hàng của khách hàng</p>
+                </div>
             </div>
-            
-            <button onclick="document.getElementById('addPizzaModal').classList.remove('hidden')"
-                class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 flex items-center gap-2 shadow-sm transition-colors">
-                <i class="fas fa-plus"></i> Thêm Pizza Mới
-            </button>
-        </div>
+        @else
+            {{-- Quản lý Pizza --}}
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h1 class="text-3xl font-extrabold text-gray-900 flex items-center gap-3 mb-1">
+                        <i class="fas fa-pizza-slice text-indigo-600"></i> Quản lý Pizza
+                    </h1>
+                    <p class="text-gray-600">Quản lý danh sách sản phẩm pizza của cửa hàng</p>
+                </div>
+                
+                <button onclick="document.getElementById('addPizzaModal').classList.remove('hidden')"
+                    class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 flex items-center gap-2 shadow-sm transition-colors">
+                    <i class="fas fa-plus"></i> Thêm Pizza Mới
+                </button>
+            </div>
+        @endif
 
         @if(session('success'))
             <div class="bg-green-50 border-l-4 border-green-400 p-4 mb-6">
@@ -82,6 +99,7 @@
             </div>
         @endif
 
+        @if(!request()->routeIs('admin.orders.index'))
         {{-- Modal thêm pizza --}}
         <div id="addPizzaModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
             <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
@@ -186,32 +204,143 @@
                 </form>
             </div>
         </div>
-        <input type="text" name="base" placeholder="Đế" class="w-full mb-2 border p-2 rounded">
-        <input type="text" name="topping" placeholder="Topping" class="w-full mb-2 border p-2 rounded">
-        <input type="text" name="sauce" placeholder="Sốt" class="w-full mb-2 border p-2 rounded">
-        <input type="text" name="type" placeholder="Loại pizza" class="w-full mb-2 border p-2 rounded">
-        <input type="text" name="size" placeholder="Size" class="w-full mb-2 border p-2 rounded">
-        <label class="flex items-center gap-2 mb-2">
-            <input type="checkbox" name="available" value="1"> Hiển thị cho user
-        </label>
-        <div class="flex justify-end gap-2">
-            <button type="button" onclick="document.getElementById('addPizzaModal').classList.add('hidden')" class="px-3 py-1 border rounded">Hủy</button>
-            <button type="submit" class="px-3 py-1 bg-indigo-600 text-white rounded">Thêm</button>
-        </div>
-    </form>
-</div>
+        @endif
 
-        {{-- Bảng quản lý pizza --}}
-        <section class="bg-white border border-gray-200 rounded-lg shadow-sm">
-            <header class="flex justify-between items-center px-6 py-4 border-b border-gray-200">
-                <h2 class="font-semibold text-gray-900 flex items-center gap-2">
-                    <i class="fas fa-list"></i> Danh sách Pizza
-                </h2>
-                <span class="text-sm text-gray-500">Tổng cộng: {{ count($pizzas) }} pizza</span>
-            </header>
+        @if(request()->routeIs('admin.orders.index'))
+            {{-- Bảng quản lý đơn hàng --}}
+            <section class="bg-white border border-gray-200 rounded-lg shadow-sm mb-6">
+                {{-- Status Filter Tabs --}}
+                <div class="flex border-b">
+                    <a href="{{ route('admin.orders.index') }}" 
+                       class="px-6 py-4 text-center {{ !request('status') ? 'border-b-2 border-indigo-500 text-indigo-600 font-semibold' : 'text-gray-600 hover:text-gray-900' }}">
+                        Tất cả ({{ $statusCounts['all'] }})
+                    </a>
+                    <a href="{{ route('admin.orders.index', ['status' => 'pending']) }}" 
+                       class="px-6 py-4 text-center {{ request('status') == 'pending' ? 'border-b-2 border-indigo-500 text-indigo-600 font-semibold' : 'text-gray-600 hover:text-gray-900' }}">
+                        Chờ xử lý ({{ $statusCounts['pending'] }})
+                    </a>
+                    <a href="{{ route('admin.orders.index', ['status' => 'processing']) }}" 
+                       class="px-6 py-4 text-center {{ request('status') == 'processing' ? 'border-b-2 border-indigo-500 text-indigo-600 font-semibold' : 'text-gray-600 hover:text-gray-900' }}">
+                        Đang xử lý ({{ $statusCounts['processing'] }})
+                    </a>
+                    <a href="{{ route('admin.orders.index', ['status' => 'ordered']) }}" 
+                       class="px-6 py-4 text-center {{ request('status') == 'ordered' ? 'border-b-2 border-indigo-500 text-indigo-600 font-semibold' : 'text-gray-600 hover:text-gray-900' }}">
+                        Đã đặt hàng ({{ $statusCounts['ordered'] }})
+                    </a>
+                    <a href="{{ route('admin.orders.index', ['status' => 'cancelled']) }}" 
+                       class="px-6 py-4 text-center {{ request('status') == 'cancelled' ? 'border-b-2 border-indigo-500 text-indigo-600 font-semibold' : 'text-gray-600 hover:text-gray-900' }}">
+                        Đã hủy ({{ $statusCounts['cancelled'] }})
+                    </a>
+                </div>
 
-            <div class="overflow-x-auto">
-                <table class="w-full text-left text-gray-600 text-sm">
+                {{-- Search Form --}}
+                <div class="p-4 bg-gray-50">
+                    <form method="GET" action="{{ route('admin.orders.index') }}" class="flex gap-4">
+                        @if(request('status'))
+                            <input type="hidden" name="status" value="{{ request('status') }}">
+                        @endif
+                        <div class="flex-1">
+                            <input type="text" name="search" value="{{ request('search') }}" 
+                                   placeholder="Tìm kiếm theo ID đơn hàng, tên khách hàng, email..." 
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                        </div>
+                        <button type="submit" class="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+                            <i class="fas fa-search mr-2"></i>Tìm kiếm
+                        </button>
+                        @if(request('search'))
+                            <a href="{{ route('admin.orders.index', ['status' => request('status')]) }}" 
+                               class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">
+                                <i class="fas fa-times mr-2"></i>Xóa
+                            </a>
+                        @endif
+                    </form>
+                </div>
+
+                {{-- Orders Table --}}
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-gray-600 text-sm">
+                        <thead class="border-b border-gray-200 bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-4 font-semibold text-gray-700 uppercase tracking-wide">ID</th>
+                                <th class="px-6 py-4 font-semibold text-gray-700 uppercase tracking-wide">Khách hàng</th>
+                                <th class="px-6 py-4 font-semibold text-gray-700 uppercase tracking-wide">Số lượng món</th>
+                                <th class="px-6 py-4 font-semibold text-gray-700 uppercase tracking-wide">Tổng tiền</th>
+                                <th class="px-6 py-4 font-semibold text-gray-700 uppercase tracking-wide">Trạng thái</th>
+                                <th class="px-6 py-4 font-semibold text-gray-700 uppercase tracking-wide">Ngày tạo</th>
+                                <th class="px-6 py-4 font-semibold text-gray-700 uppercase tracking-wide text-right">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($orders as $order)
+                                <tr class="hover:bg-gray-50 border-b border-gray-100 transition-colors">
+                                    <td class="px-6 py-4">
+                                        <span class="font-medium text-gray-900">#{{ $order->id }}</span>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="text-sm font-medium text-gray-900">{{ $order->user->name }}</div>
+                                        <div class="text-sm text-gray-500">{{ $order->user->email }}</div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span class="text-gray-900">{{ $order->items->sum('quantity') }} món</span>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span class="font-semibold text-gray-900">{{ number_format($order->total, 0, ',', '.') }}đ</span>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        @php
+                                            $statusConfig = [
+                                                'pending' => ['text' => 'Chờ xử lý', 'class' => 'bg-yellow-100 text-yellow-800'],
+                                                'processing' => ['text' => 'Đang xử lý', 'class' => 'bg-blue-100 text-blue-800'],
+                                                'ordered' => ['text' => 'Đã đặt hàng', 'class' => 'bg-green-100 text-green-800'],
+                                                'cancelled' => ['text' => 'Đã hủy', 'class' => 'bg-red-100 text-red-800'],
+                                            ];
+                                            $config = $statusConfig[$order->status] ?? ['text' => $order->status, 'class' => 'bg-gray-100 text-gray-800'];
+                                        @endphp
+                                        <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full {{ $config['class'] }}">
+                                            {{ $config['text'] }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 text-gray-500">
+                                        {{ $order->created_at->format('d/m/Y H:i') }}
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <button onclick="viewOrderDetail({{ $order->id }})" 
+                                                class="text-indigo-600 hover:text-indigo-900 font-medium">
+                                            <i class="fas fa-eye mr-1"></i>Xem
+                                        </button>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="7" class="px-6 py-8 text-center text-gray-500">
+                                        <i class="fas fa-inbox text-4xl mb-4 block"></i>
+                                        <p class="text-lg">Không có đơn hàng nào</p>
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+
+                {{-- Pagination --}}
+                @if($orders->hasPages())
+                    <div class="px-6 py-4 border-t">
+                        {{ $orders->links() }}
+                    </div>
+                @endif
+            </section>
+        @else
+            {{-- Bảng quản lý pizza --}}
+            <section class="bg-white border border-gray-200 rounded-lg shadow-sm">
+                <header class="flex justify-between items-center px-6 py-4 border-b border-gray-200">
+                    <h2 class="font-semibold text-gray-900 flex items-center gap-2">
+                        <i class="fas fa-list"></i> Danh sách Pizza
+                    </h2>
+                    <span class="text-sm text-gray-500">Tổng cộng: {{ count($pizzas) }} pizza</span>
+                </header>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-gray-600 text-sm">
                     <thead class="border-b border-gray-200 bg-gray-50">
                         <tr>
                             <th class="px-6 py-4 font-semibold text-gray-700 uppercase tracking-wide">Mã</th>
@@ -439,7 +568,33 @@
                 </table>
             </div>
         </section>
+        @endif
     </main>
+
+    {{-- Modal xem chi tiết đơn hàng --}}
+    <div id="orderDetailModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                <h3 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                    <i class="fas fa-receipt text-indigo-600"></i>
+                    Chi tiết đơn hàng <span id="modalOrderId"></span>
+                </h3>
+                <button onclick="closeOrderModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="p-6">
+                <div id="orderDetailContent" class="space-y-6">
+                    <!-- Content will be loaded here -->
+                    <div class="text-center py-8">
+                        <i class="fas fa-spinner fa-spin text-4xl text-indigo-600"></i>
+                        <p class="mt-4 text-gray-600">Đang tải thông tin đơn hàng...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     
     <script>
         // Delete pizza function
@@ -449,8 +604,207 @@
             }
         }
         
+        // View order detail function
+        function viewOrderDetail(orderId) {
+            // Show modal
+            document.getElementById('orderDetailModal').classList.remove('hidden');
+            document.getElementById('modalOrderId').textContent = '#' + orderId;
+            
+            // Fetch order details
+            fetch(`/admin/orders/${orderId}/detail`)
+                .then(response => response.json())
+                .then(data => {
+                    displayOrderDetail(data);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('orderDetailContent').innerHTML = `
+                        <div class="text-center py-8 text-red-600">
+                            <i class="fas fa-exclamation-circle text-4xl"></i>
+                            <p class="mt-4">Không thể tải thông tin đơn hàng</p>
+                        </div>
+                    `;
+                });
+        }
+        
+        function closeOrderModal() {
+            document.getElementById('orderDetailModal').classList.add('hidden');
+        }
+        
+        function displayOrderDetail(order) {
+            const statusConfig = {
+                'pending': { text: 'Chờ xử lý', class: 'bg-yellow-100 text-yellow-800' },
+                'processing': { text: 'Đang xử lý', class: 'bg-blue-100 text-blue-800' },
+                'ordered': { text: 'Đã đặt hàng', class: 'bg-green-100 text-green-800' },
+                'cancelled': { text: 'Đã hủy', class: 'bg-red-100 text-red-800' }
+            };
+            const config = statusConfig[order.status] || { text: order.status, class: 'bg-gray-100 text-gray-800' };
+            
+            const sizeLabels = {
+                'small': 'Nhỏ',
+                'medium': 'Vừa',
+                'large': 'Lớn'
+            };
+            
+            let itemsHtml = '';
+            order.items.forEach(item => {
+                const size = item.pizza_size || item.size || 'medium';
+                const unitPrice = parseFloat(item.unit_price || item.price || 0);
+                const totalPrice = parseFloat(item.total_price || (unitPrice * item.quantity) || 0);
+                
+                itemsHtml += `
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-4 py-4">
+                            <div class="flex items-center gap-3">
+                                ${item.pizza && item.pizza.image ? `
+                                    <img src="/${item.pizza.image}" alt="${item.pizza_name}" class="w-16 h-16 object-cover rounded">
+                                ` : ''}
+                                <div class="font-medium text-gray-900">${item.pizza_name}</div>
+                            </div>
+                        </td>
+                        <td class="px-4 py-4 text-center">
+                            <span class="inline-block px-3 py-1 text-sm font-medium bg-gray-100 rounded">
+                                ${sizeLabels[size] || size}
+                            </span>
+                        </td>
+                        <td class="px-4 py-4 text-center font-medium">${item.quantity}</td>
+                        <td class="px-4 py-4 text-right">${new Intl.NumberFormat('vi-VN').format(unitPrice)}đ</td>
+                        <td class="px-4 py-4 text-right font-semibold">${new Intl.NumberFormat('vi-VN').format(totalPrice)}đ</td>
+                    </tr>
+                `;
+            });
+            
+            const html = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Customer Info -->
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <h4 class="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                            <i class="fas fa-user text-indigo-600"></i>
+                            Thông tin khách hàng
+                        </h4>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Tên:</span>
+                                <span class="font-medium">${order.user.name}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Email:</span>
+                                <span class="font-medium">${order.user.email}</span>
+                            </div>
+                            ${order.user.phone ? `
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Số điện thoại:</span>
+                                    <span class="font-medium">${order.user.phone}</span>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+
+                    <!-- Order Info -->
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <h4 class="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                            <i class="fas fa-info-circle text-indigo-600"></i>
+                            Thông tin đơn hàng
+                        </h4>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Mã đơn:</span>
+                                <span class="font-medium">#${order.id}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Ngày tạo:</span>
+                                <span class="font-medium">${new Date(order.created_at).toLocaleString('vi-VN')}</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Trạng thái:</span>
+                                <span class="px-3 py-1 text-xs font-semibold rounded-full ${config.class}">
+                                    ${config.text}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Update Status Form -->
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <h4 class="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                        <i class="fas fa-sync-alt text-indigo-600"></i>
+                        Cập nhật trạng thái
+                    </h4>
+                    <form method="POST" action="/admin/orders/${order.id}/status" class="flex gap-3">
+                        <input type="hidden" name="_token" value="${document.querySelector('meta[name="csrf-token"]')?.content || ''}">
+                        <input type="hidden" name="_method" value="PATCH">
+                        <select name="status" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                            <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Chờ xử lý</option>
+                            <option value="processing" ${order.status === 'processing' ? 'selected' : ''}>Đang xử lý</option>
+                            <option value="ordered" ${order.status === 'ordered' ? 'selected' : ''}>Đã đặt hàng</option>
+                            <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>Đã hủy</option>
+                        </select>
+                        <button type="submit" class="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+                            <i class="fas fa-save mr-2"></i>Cập nhật
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Order Items -->
+                <div>
+                    <h4 class="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                        <i class="fas fa-list text-indigo-600"></i>
+                        Danh sách sản phẩm
+                    </h4>
+                    <div class="overflow-x-auto border border-gray-200 rounded-lg">
+                        <table class="w-full text-sm">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-3 text-left font-medium text-gray-700">Sản phẩm</th>
+                                    <th class="px-4 py-3 text-center font-medium text-gray-700">Kích thước</th>
+                                    <th class="px-4 py-3 text-center font-medium text-gray-700">Số lượng</th>
+                                    <th class="px-4 py-3 text-right font-medium text-gray-700">Đơn giá</th>
+                                    <th class="px-4 py-3 text-right font-medium text-gray-700">Thành tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                ${itemsHtml}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Order Summary -->
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <h4 class="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                        <i class="fas fa-calculator text-indigo-600"></i>
+                        Tổng kết
+                    </h4>
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-gray-700">
+                            <span>Tạm tính:</span>
+                            <span class="font-medium">${new Intl.NumberFormat('vi-VN').format(order.subtotal)}đ</span>
+                        </div>
+                        ${order.discount_amount > 0 ? `
+                            <div class="flex justify-between text-green-600">
+                                <span>Giảm giá (${order.coupon_code}):</span>
+                                <span class="font-medium">-${new Intl.NumberFormat('vi-VN').format(order.discount_amount)}đ</span>
+                            </div>
+                        ` : ''}
+                        <div class="border-t pt-2 flex justify-between text-lg font-bold">
+                            <span>Tổng cộng:</span>
+                            <span class="text-indigo-600">${new Intl.NumberFormat('vi-VN').format(order.total)}đ</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('orderDetailContent').innerHTML = html;
+        }
+        
         // Close modal when clicking outside
         window.onclick = function(event) {
+            const orderModal = document.getElementById('orderDetailModal');
+            if (event.target == orderModal) {
+                closeOrderModal();
+            }
+            
             const addModal = document.getElementById('addPizzaModal');
             if (event.target == addModal) {
                 addModal.classList.add('hidden');

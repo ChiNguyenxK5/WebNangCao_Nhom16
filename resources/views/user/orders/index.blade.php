@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đơn hàng của tôi</title>
+    <title>Giỏ hàng của tôi</title>
     @vite(['resources/css/app.css'])
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('css/style-inline.css') }}">
@@ -28,7 +28,7 @@
                                 <a href="{{ url('/') }}" class="pizza-nav-link">Trang chủ</a>
                             </li>
                             <li class="pizza-nav-item">
-                                <a href="{{ route('orders.index') }}" class="pizza-nav-link active">Đơn hàng của tôi</a>
+                                <a href="{{ route('orders.index') }}" class="pizza-nav-link active">Giỏ hàng của tôi</a>
                             </li>
                         </ul>
                     </nav>
@@ -53,7 +53,7 @@
     <!-- Main Content -->
     <div class="orders-container">
         <div class="container">
-            <h1>Đơn hàng của tôi</h1>
+            <h1>Giỏ hàng của tôi</h1>
             
             @if(session('success'))
                 <div class="alert alert-success">
@@ -67,11 +67,21 @@
                     <div class="order-card">
                         <div class="order-card-header">
                             <div class="order-info">
-                                <h3>Đơn hàng #{{ $order->id }}</h3>
+                                <h3>Giỏ hàng #{{ $order->id }}</h3>
                                 <p class="order-date">{{ $order->created_at->format('d/m/Y H:i') }}</p>
                             </div>
+                            @php
+                                $statusLabels = [
+                                    'pending' => 'Đang xử lý',
+                                    'ordered' => 'Đã đặt hàng',
+                                    'processing' => 'Đang xử lý',
+                                    'completed' => 'Hoàn thành',
+                                    'cancelled' => 'Đã hủy',
+                                ];
+                                $statusLabel = $statusLabels[$order->status] ?? ucfirst($order->status);
+                            @endphp
                             <div class="order-status status-{{ $order->status }}">
-                                {{ $order->status_text }}
+                                {{ $statusLabel }}
                             </div>
                         </div>
                         
@@ -80,20 +90,29 @@
                                 @foreach($order->items as $item)
                                 <div class="order-item">
                                     <span class="item-name">{{ $item->pizza_name }}</span>
-                                    <span class="item-details">{{ $item->size_text }} x{{ $item->quantity }}</span>
+                                    <span class="item-details">
+                                        {{ ucfirst($item->pizza_size ?? 'small') }} x{{ $item->quantity }}
+                                        @if(isset($item->total_price))
+                                            — {{ number_format($item->total_price, 0, ',', '.') }}₫
+                                        @endif
+                                    </span>
                                 </div>
                                 @endforeach
                             </div>
-                            
-                            <div class="order-total">
-                                <strong>{{ number_format($order->total, 0, ',', '.') }}₫</strong>
-                            </div>
+
+                                <!-- removed duplicate total (display footer total below) -->
                         </div>
                         
-                        <div class="order-card-actions">
-                            <a href="{{ route('orders.show', $order->id) }}" class="btn btn-primary">
-                                Xem chi tiết
-                            </a>
+                        <div class="order-card-footer">
+                            <div class="footer-left">{{ number_format($order->total ?? $order->subtotal ?? 0, 0, ',', '.') }}₫</div>
+                            <div class="footer-actions">
+                                @if($order->status === 'pending')
+                                    <button class="btn btn-success btn-place" data-order-id="{{ $order->id }}" data-order-total="{{ $order->total ?? $order->subtotal ?? 0 }}">Đặt hàng</button>
+                                @endif
+                                    <a href="{{ route('orders.show', $order->id) }}" class="btn btn-primary">
+                                        Xem chi tiết
+                                    </a>
+                            </div>
                         </div>
                     </div>
                     @endforeach
@@ -101,8 +120,8 @@
             @else
                 <div class="empty-orders">
                     <div class="empty-icon">🍕</div>
-                    <h3>Không có đơn hàng nào</h3>
-                    <p>Bạn chưa có đơn hàng nào hoặc đã hủy tất cả. Hãy đặt pizza ngay để thưởng thức những món ngon nhất!</p>
+                    <h3>Không có giỏ hàng nào</h3>
+                    <p>Bạn chưa có giỏ hàng nào hoặc đã hủy tất cả. Hãy đặt pizza ngay để thưởng thức những món ngon nhất!</p>
                     <a href="{{ url('/') }}" class="btn btn-primary">Đặt pizza ngay</a>
                 </div>
             @endif
@@ -228,6 +247,25 @@
             text-align: right;
         }
 
+        .order-card-footer {
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            padding: 14px 25px;
+            background: #fff;
+            border-top: 1px solid #eee;
+        }
+
+        .footer-left {
+            color:#333;
+            font-weight:700;
+        }
+
+        .footer-actions {
+            display:flex;
+            gap:12px;
+        }
+
         .btn {
             padding: 10px 20px;
             border: none;
@@ -247,6 +285,11 @@
         .btn-primary:hover {
             background: #e55a2e;
             transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: #1fbf6b;
+            color: #fff;
         }
 
         .empty-orders {
@@ -295,5 +338,41 @@
             }
         }
     </style>
+    <!-- Place order modal -->
+    <div id="place-order-modal" class="modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); align-items:center; justify-content:center; z-index:60;">
+        <div class="modal-content" style="background:#fff; padding:20px; border-radius:12px; width:420px; max-width:90%;">
+            <h3 style="margin:0 0 10px 0;">Xác nhận đặt hàng</h3>
+            <p id="modal-order-info">Bạn sắp đặt đơn hàng <strong>#<span id="modal-order-id"></span></strong> với tổng <strong id="modal-order-total"></strong></p>
+            <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:18px;">
+                <button id="modal-cancel" class="btn btn-secondary">Hủy</button>
+                <form id="modal-place-form" method="POST" style="display:inline">
+                    @csrf
+                    @method('PATCH')
+                    <input type="hidden" name="action" value="place">
+                    <button type="submit" class="btn btn-primary">Xác nhận</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('click', function(e) {
+            const placeBtn = e.target.closest('.btn-place');
+            if (placeBtn) {
+                const id = placeBtn.dataset.orderId;
+                const total = placeBtn.dataset.orderTotal;
+                document.getElementById('modal-order-id').textContent = id;
+                document.getElementById('modal-order-total').textContent = new Intl.NumberFormat('vi-VN').format(total) + '₫';
+                const modal = document.getElementById('place-order-modal');
+                const form = document.getElementById('modal-place-form');
+                form.action = '/orders/' + id;
+                modal.style.display = 'flex';
+            }
+        });
+
+        document.getElementById('modal-cancel').addEventListener('click', function(){
+            document.getElementById('place-order-modal').style.display = 'none';
+        });
+    </script>
 </body>
 </html>

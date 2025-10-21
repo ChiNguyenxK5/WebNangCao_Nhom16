@@ -41,6 +41,11 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/admin/pizzas', [PizzaController::class, 'store'])->name('admin.pizzas.store');
     Route::put('/admin/pizzas/{pizza}', [PizzaController::class, 'update'])->name('admin.pizzas.update');
     Route::delete('/admin/pizzas/{pizza}', [PizzaController::class, 'destroy'])->name('admin.pizzas.destroy');
+
+    // Admin Orders Management - same page as pizzas
+    Route::get('/admin/orders', [OrderController::class, 'adminIndex'])->name('admin.orders.index');
+    Route::get('/admin/orders/{order}/detail', [OrderController::class, 'getOrderDetail'])->name('admin.orders.detail');
+    Route::patch('/admin/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('admin.orders.updateStatus');
 });
 
 Route::middleware('auth')->group(function () {
@@ -59,6 +64,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/orders', [App\Http\Controllers\OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{order}', [App\Http\Controllers\OrderController::class, 'show'])->name('orders.show');
     Route::patch('/orders/{order}', [App\Http\Controllers\OrderController::class, 'update'])->name('orders.update');
+    Route::patch('/orders/{order}/reopen', [App\Http\Controllers\OrderController::class, 'reopenOrder'])->name('orders.reopen');
+    Route::patch('/orders/{order}/items/{item}', [App\Http\Controllers\OrderController::class, 'updateItem'])->name('orders.items.update');
+    Route::delete('/orders/{order}/items/{item}', [App\Http\Controllers\OrderController::class, 'deleteItem'])->name('orders.items.delete');
+    Route::post('/orders/{order}/items', [App\Http\Controllers\OrderController::class, 'addItem'])->name('orders.items.add');
+    // Coupon routes for orders
+    Route::post('/orders/{order}/coupon', [App\Http\Controllers\OrderController::class, 'applyCoupon'])->name('orders.coupon.apply');
+    Route::delete('/orders/{order}/coupon', [App\Http\Controllers\OrderController::class, 'removeCoupon'])->name('orders.coupon.remove');
 
     Route::get('/cart', [App\Http\Controllers\CartController::class, 'index'])->name('cart.index');
     Route::post('/cart/add', [App\Http\Controllers\CartController::class, 'add'])->name('cart.add');

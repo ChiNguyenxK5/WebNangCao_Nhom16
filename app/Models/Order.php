@@ -37,6 +37,7 @@ class Order extends Model
         $statuses = [
             'pending' => 'Đang xử lý',
             'processing' => 'Đang chuẩn bị',
+            'ordered' => 'Đã đặt hàng',
             'completed' => 'Hoàn thành',
             'cancelled' => 'Đã hủy',
         ];

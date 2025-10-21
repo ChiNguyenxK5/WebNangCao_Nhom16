@@ -106,7 +106,7 @@
 
                             <x-dropdown-link href="#" class="flex items-center space-x-2 hover:bg-orange-100">
                                 <span>📋</span>
-                                <span>Đơn Hàng Của Tôi</span>
+                                <span>Giỏ Hàng Của Tôi</span>
                             </x-dropdown-link>
 
                             <x-dropdown-link href="#" class="flex items-center space-x-2 hover:bg-orange-100">
@@ -203,7 +203,7 @@
                 <a href="#" 
                    class="flex items-center space-x-3 px-4 py-3 text-white font-semibold rounded-xl hover:bg-white/20 transition-all duration-300">
                     <span class="text-xl">📋</span>
-                    <span>Đơn Hàng Của Tôi</span>
+                                <span>Giỏ Hàng Của Tôi</span>
                 </a>
 
                 <a href="#" 

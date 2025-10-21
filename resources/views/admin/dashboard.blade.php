@@ -25,6 +25,9 @@
                 <a href="{{ route('admin.pizzas') }}" class="flex items-center gap-3 text-indigo-600 font-semibold">
                     <i class="fas fa-box"></i> Sản phẩm
                 </a>
+                <a href="{{ route('admin.orders.index') }}" class="flex items-center gap-3 text-gray-700 hover:text-gray-900 font-medium">
+                    <i class="fas fa-shopping-cart"></i> Quản lý đơn hàng
+                </a>
             </nav>
         </div>
 

@@ -70,7 +70,7 @@
                                 <span>Thông tin cá nhân</span>
                             </a>
                             <a href="{{ route('orders.index') }}" class="pizza-dropdown-item">
-                                <span>Đơn hàng của tôi</span>
+                                <span>Giỏ hàng của tôi</span>
                             </a>
                             <div class="dropdown-divider"></div>
                             <form method="POST" action="{{ route('logout') }}">
