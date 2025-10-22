@@ -1,0 +1,151 @@
+/* Pizza Filter Styles */
+.pizza-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 30px;
+    justify-content: center;
+}
+
+.filter-btn {
+    padding: 10px 20px;
+    background: white;
+    border: 2px solid #ff6b35;
+    border-radius: 25px;
+    text-decoration: none;
+    color: #ff6b35;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.filter-btn:hover,
+.filter-btn.active {
+    background: #ff6b35;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+}
+
+/* Pizza Grid */
+.pizza-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
+}
+
+/* Pizza Card */
+.pizza-card {
+    border: 1px solid #eee;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.pizza-card:hover { 
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.pizza-card img { 
+    width: 100%; 
+    height: 200px; 
+    object-fit: cover; 
+}
+
+.pizza-info { 
+    padding: 20px; 
+}
+
+.pizza-info h3 {
+    margin: 0 0 10px 0;
+    color: #333;
+    font-size: 1.2em;
+}
+
+.pizza-type {
+    color: #666;
+    font-size: 0.9em;
+    margin-bottom: 10px;
+}
+
+.pizza-desc {
+    color: #777;
+    font-size: 0.9em;
+    line-height: 1.4;
+    margin-bottom: 15px;
+}
+
+.pizza-price { 
+    color: #e63946; 
+    font-weight: bold; 
+    font-size: 1.1em;
+    margin: 15px 0; 
+}
+
+/* Buttons */
+.btn-book {
+    background: linear-gradient(135deg, #ff6b35, #f7931e);
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: 600;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+.btn-book:hover { 
+    background: linear-gradient(135deg, #e55a2b, #e8841a);
+    transform: translateY(-2px);
+}
+
+.pizza-status {
+    display: inline-block;
+    padding: 10px 20px;
+    background: #ccc;
+    color: white;
+    border-radius: 25px;
+    font-weight: 600;
+    width: 100%;
+    text-align: center;
+}
+
+/* Empty State */
+.empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.empty-state p {
+    font-size: 1.2em;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.btn-back {
+    display: inline-block;
+    padding: 12px 25px;
+    background: #ff6b35;
+    color: white;
+    text-decoration: none;
+    border-radius: 25px;
+    font-weight: 600;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .pizza-filter {
+        justify-content: flex-start;
+        overflow-x: auto;
+        padding: 10px 0;
+    }
+    
+    .filter-btn {
+        flex-shrink: 0;
+    }
+}

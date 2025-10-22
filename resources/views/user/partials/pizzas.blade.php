@@ -1,75 +1,3 @@
-<!-- filepath: resources/views/user/partials/pizzas.blade.php -->
-<section class="pizzas">
-    <div class="container">
-        <h2 class="section-title"></h2>
-
-        <!-- Filter Topping -->
-        <div class="pizza-filter">
-            <a href="{{ url('/?topping=all') }}" class="filter-btn {{ $selectedTopping === 'all' ? 'active' : '' }}">
-                🍕 Tất Cả
-            </a>
-            @foreach($toppings as $topping)
-                <a href="{{ url('/?topping=' . $topping) }}" class="filter-btn {{ $selectedTopping === $topping ? 'active' : '' }}">
-                    @switch($topping)
-                        @case('Cheese')
-                            🧀 Phô mai
-                            @break
-                        @case('Pepperoni')
-                            🍖 Xúc xích
-                            @break
-                        @case('Veggie')
-                            🥬 Rau củ
-                            @break
-                        @case('Seafood')
-                            🦐 Hải sản
-                            @break
-                        @case('Meat')
-                            🥩 Thịt
-                            @break
-                        @default
-                            🍕 {{ $topping }}
-                    @endswitch
-                </a>
-            @endforeach
-        </div>
-
-        <div class="pizza-grid">
-            @forelse ($pizzas as $pizza)
-                <div class="pizza-card">
-                    <img src="{{ asset($pizza->image_url ?? 'uploads/default-pizza.jpg') }}" alt="{{ $pizza->name }}">
-                    <div class="pizza-info">
-                        <h3>{{ $pizza->name }}</h3>
-                        <p class="pizza-type">
-                            @if($pizza->topping)
-                                {{ $pizza->topping }} • 
-                            @endif
-                            {{ $pizza->size ?? 'Medium' }}
-                        </p>
-                        <p class="pizza-desc">{{ Str::limit($pizza->description, 100) }}</p>
-                        <p class="pizza-price">{{ number_format($pizza->price) }} VND</p>
-
-                        @if ($pizza->available)
-                            <button class="btn-book" 
-                                data-pizza-id="{{ $pizza->id }}"
-                                data-pizza-name="{{ $pizza->name }}"
-                                data-pizza-price="{{ $pizza->price }}"
-                                data-pizza-image="{{ asset($pizza->image_url ?? 'uploads/default-pizza.jpg') }}"
-                            >Đặt Pizza</button>
-                        @else
-                            <span class="pizza-status">Hết Pizza</span>
-                        @endif
-                    </div>
-                </div>
-            @empty
-                <div class="empty-state">
-                    <p>Không có pizza nào với topping "{{ $selectedTopping }}"</p>
-                    <a href="{{ url('/') }}" class="btn-back">Xem tất cả pizza</a>
-                </div>
-            @endforelse
-        </div>
-    </div>
-</section>
-
 <style>
 .pizza-filter {
     display: flex;
@@ -217,6 +145,77 @@
     }
 }
 </style>
+
+<section class="pizzas">
+    <div class="container">
+        <h2 class="section-title"></h2>
+
+        <!-- Filter Topping -->
+        <div class="pizza-filter">
+            <a href="{{ url('/?topping=all') }}" class="filter-btn {{ $selectedTopping === 'all' ? 'active' : '' }}">
+                🍕 Tất Cả
+            </a>
+            @foreach($toppings as $topping)
+                <a href="{{ url('/?topping=' . $topping) }}" class="filter-btn {{ $selectedTopping === $topping ? 'active' : '' }}">
+                    @switch($topping)
+                        @case('Cheese')
+                            🧀 Phô mai
+                            @break
+                        @case('Pepperoni')
+                            🍖 Xúc xích
+                            @break
+                        @case('Veggie')
+                            🥬 Rau củ
+                            @break
+                        @case('Seafood')
+                            🦐 Hải sản
+                            @break
+                        @case('Meat')
+                            🥩 Thịt
+                            @break
+                        @default
+                            🍕 {{ $topping }}
+                    @endswitch
+                </a>
+            @endforeach
+        </div>
+
+        <div class="pizza-grid">
+            @forelse ($pizzas as $pizza)
+                <div class="pizza-card">
+                    <img src="{{ asset($pizza->image_url ?? 'uploads/default-pizza.jpg') }}" alt="{{ $pizza->name }}">
+                    <div class="pizza-info">
+                        <h3>{{ $pizza->name }}</h3>
+                        <p class="pizza-type">
+                            @if($pizza->topping)
+                                {{ $pizza->topping }} • 
+                            @endif
+                            {{ $pizza->size ?? 'Medium' }}
+                        </p>
+                        <p class="pizza-desc">{{ Str::limit($pizza->description, 100) }}</p>
+                        <p class="pizza-price">{{ number_format($pizza->price) }} VND</p>
+
+                        @if ($pizza->available)
+                            <button class="btn-book" 
+                                data-pizza-id="{{ $pizza->id }}"
+                                data-pizza-name="{{ $pizza->name }}"
+                                data-pizza-price="{{ $pizza->price }}"
+                                data-pizza-image="{{ asset($pizza->image_url ?? 'uploads/default-pizza.jpg') }}"
+                            >Đặt Pizza</button>
+                        @else
+                            <span class="pizza-status">Hết Pizza</span>
+                        @endif
+                    </div>
+                </div>
+            @empty
+                <div class="empty-state">
+                    <p>Không có pizza nào với topping "{{ $selectedTopping }}"</p>
+                    <a href="{{ url('/') }}" class="btn-back">Xem tất cả pizza</a>
+                </div>
+            @endforelse
+        </div>
+    </div>
+</section>
 
 <!-- Modal order form -->
 <div id="order-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); align-items:center; justify-content:center; z-index:9999;">

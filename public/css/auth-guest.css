@@ -1,0 +1,49 @@
+/* Body Background */
+body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Auth Card */
+.auth-card {
+    backdrop-filter: blur(16px);
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Pizza Icon */
+.pizza-icon {
+    font-size: 4rem;
+    color: #f97316;
+    text-shadow: 0 4px 8px rgba(249, 115, 22, 0.3);
+}
+
+/* Button Primary */
+.btn-primary {
+    background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(249, 115, 22, 0.4);
+}
+
+/* Input Field */
+.input-field {
+    transition: all 0.3s ease;
+    border: 2px solid #e5e7eb;
+}
+
+.input-field:focus {
+    border-color: #f97316;
+    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+}
