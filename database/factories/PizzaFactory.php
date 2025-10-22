@@ -11,18 +11,25 @@ class PizzaFactory extends Factory
 
     public function definition()
     {
-        $sizes = ['Small', 'Medium', 'Large'];
+        $sizes = ['Nhỏ', 'Vừa', 'Lớn'];
+        $bases = ['Đế mỏng', 'Đế dày', 'Phô mai viền'];
+        $sauces = ['Sốt cà chua', 'Sốt kem', 'Sốt pesto'];
+        $types = ['Truyền thống', 'Cao cấp', 'Đặc biệt'];
+        $toppings = ['Phô mai', 'Xúc xích', 'Hải sản', 'Thịt bò', 'Gà nướng', 'Thập cẩm'];
+
         return [
-            'name' => $this->faker->words(2, true) . ' Pizza',
-            'description' => $this->faker->sentence(),
-            'price' => $this->faker->randomFloat(2, 50, 300),
+            'category_id' => $this->faker->numberBetween(1, 3),
+            'name' => 'Pizza ' . $this->faker->randomElement(['Bò', 'Gà', 'Hải Sản', 'Thập Cẩm', 'Phô Mai']),
+            'description' => $this->faker->sentence(8, true) . ' (hương vị hấp dẫn, phù hợp với mọi lứa tuổi).',
+            'ingredients' => 'Phô mai, cà chua, hành tây, ' . $this->faker->randomElement(['tôm', 'bò', 'gà', 'nấm', 'ớt chuông']),
+            'price' => $this->faker->numberBetween(100000, 300000),
             'size' => $this->faker->randomElement($sizes),
-            'topping' => $this->faker->randomElement(['Cheese', 'Pepperoni', 'Veggie', 'Seafood']),
+            'topping' => $this->faker->randomElement($toppings),
             'image_url' => null,
             'available' => $this->faker->boolean(90),
-            'base' => $this->faker->randomElement(['Thin', 'Thick', 'Cheesy']),
-            'sauce' => $this->faker->randomElement(['Tomato', 'Cream', 'Pesto']),
-            'type' => $this->faker->randomElement(['Classic', 'Gourmet', 'Special']),
+            'base' => $this->faker->randomElement($bases),
+            'sauce' => $this->faker->randomElement($sauces),
+            'type' => $this->faker->randomElement($types),
         ];
     }
 }

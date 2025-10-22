@@ -13,12 +13,13 @@ class PizzaSeeder extends Seeder
         $pizzas = [
             [
                 'category_id' => 1, // Pizza Truyền Thống
-                'name' => 'Margherita',
+                'name' => 'Pizza Margherita',
                 'description' => 'Pizza cơ bản với cà chua, phô mai mozzarella và lá húng quế',
-                'ingredients' => 'Cà chua, phô mai mozzarella, lá húng quế, dầu olive',
-                'price' => 120.00,
+                'ingredients' => 'Cà chua, phô mai mozzarella, lá húng quế, dầu ô liu',
+                // Giá theo VND, 6 chữ số (ví dụ: 120000 = 120.000)
+                'price' => 120000,
                 'size' => 'Medium',
-                'topping' => 'Cheese',
+                'topping' => 'Phô mai',
                 'available' => true,
                 'base' => 'Thin',
                 'sauce' => 'Tomato',
@@ -26,12 +27,12 @@ class PizzaSeeder extends Seeder
             ],
             [
                 'category_id' => 2, // Pizza Hải Sản
-                'name' => 'Seafood Deluxe',
-                'description' => 'Pizza hải sản cao cấp với tôm, mực, cua',
+                'name' => 'Pizza Hải Sản Cao Cấp',
+                'description' => 'Pizza hải sản cao cấp với tôm, mực và thịt cua',
                 'ingredients' => 'Tôm, mực, thịt cua, phô mai, hành tây',
-                'price' => 250.00,
+                'price' => 250000,
                 'size' => 'Large',
-                'topping' => 'Seafood',
+                'topping' => 'Hải sản',
                 'available' => true,
                 'base' => 'Thick',
                 'sauce' => 'Cream',
@@ -39,10 +40,10 @@ class PizzaSeeder extends Seeder
             ],
             [
                 'category_id' => 3, // Pizza Thịt
-                'name' => 'Pepperoni',
+                'name' => 'Pizza Pepperoni',
                 'description' => 'Pizza với xúc xích pepperoni thơm ngon',
                 'ingredients' => 'Xúc xích pepperoni, phô mai mozzarella, sốt cà chua',
-                'price' => 180.00,
+                'price' => 180000,
                 'size' => 'Medium',
                 'topping' => 'Pepperoni',
                 'available' => true,
