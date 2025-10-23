@@ -88,6 +88,6 @@ Blade Template
 Bootstrap / Tailwind CSS
 
 ❤️ TÁC GIẢ
-👩‍💻 Nhóm 14 - Web Nâng Cao
+👩‍💻 Nhóm 16 - Web Nâng Cao
 
 Nếu bạn thấy dự án hữu ích, hãy ⭐ Star để ủng hộ nhé!
