@@ -26,8 +26,8 @@ Xem thống kê doanh thu cơ bản
 
 ⚙️ Cách chạy dự án sau khi clone
 🔹 Bước 1: Clone project
-git clone https://github.com/ChiNguyenxK5/WebNangCao_Nhom14.git
-cd WebNangCao_Nhom14
+git clone https://github.com/ChiNguyenxK5/WebNangCao_Nhom16.git
+cd WebNangCao_Nhom16
 
 🔹 Bước 2: Cài đặt PHP dependencies
 composer install
