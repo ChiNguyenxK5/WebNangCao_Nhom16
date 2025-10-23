@@ -64,7 +64,7 @@
         @if(!request()->routeIs('admin.orders.index'))
         {{-- Modal thêm pizza --}}
         <div id="addPizzaModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
+            <div class="bg-white rounded-lg shadow-xl w-full max-w-md max-h-[90vh] flex flex-col">
                 <div class="px-6 py-4 border-b border-gray-200">
                     <h3 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
                         <i class="fas fa-plus-circle text-indigo-600"></i>
@@ -72,9 +72,10 @@
                     </h3>
                 </div>
                 
-                <form action="{{ route('admin.pizzas.store') }}" method="POST" enctype="multipart/form-data" class="p-6">
+                <form action="{{ route('admin.pizzas.store') }}" method="POST" enctype="multipart/form-data" class="flex flex-col flex-1 overflow-hidden">
                     @csrf
-                    <div class="space-y-4">
+                    <div class="p-6 overflow-y-auto flex-1">
+                        <div class="space-y-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Tên Pizza *</label>
                             <input type="text" name="name" placeholder="Nhập tên pizza..." 
@@ -151,9 +152,10 @@
                                 class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
                             <label for="available" class="ml-2 block text-sm text-gray-900">Hiển thị cho khách hàng</label>
                         </div>
+                        </div>
                     </div>
                     
-                    <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-200">
+                    <div class="flex justify-end gap-3 px-6 py-4 border-t border-gray-200 bg-gray-50">
                         <button type="button" onclick="document.getElementById('addPizzaModal').classList.add('hidden')" 
                             class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                             Hủy
@@ -418,7 +420,7 @@
 
                                 {{-- Modal sửa --}}
                                 <div id="editPizza{{ $pizza->id }}" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                                    <div class="bg-white rounded-lg shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+                                    <div class="bg-white rounded-lg shadow-xl w-full max-w-md max-h-[90vh] flex flex-col">
                                         <div class="px-6 py-4 border-b border-gray-200">
                                             <h3 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
                                                 <i class="fas fa-edit text-indigo-600"></i>
@@ -426,10 +428,11 @@
                                             </h3>
                                         </div>
                                         
-                                        <form action="{{ route('admin.pizzas.update', $pizza->id) }}" method="POST" enctype="multipart/form-data" class="p-6">
+                                        <form action="{{ route('admin.pizzas.update', $pizza->id) }}" method="POST" enctype="multipart/form-data" class="flex flex-col flex-1 overflow-hidden">
                                             @csrf
                                             @method('PUT')
-                                            <div class="space-y-4">
+                                            <div class="p-6 overflow-y-auto flex-1">
+                                                <div class="space-y-4">
                                                 <div>
                                                     <label class="block text-sm font-medium text-gray-700 mb-1">Tên Pizza *</label>
                                                     <input type="text" name="name" value="{{ $pizza->name }}" 
@@ -509,9 +512,10 @@
                                                         class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
                                                     <label for="available_{{ $pizza->id }}" class="ml-2 block text-sm text-gray-900">Hiển thị cho khách hàng</label>
                                                 </div>
+                                                </div>
                                             </div>
                                             
-                                            <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-200">
+                                            <div class="flex justify-end gap-3 px-6 py-4 border-t border-gray-200 bg-gray-50">
                                                 <button type="button" onclick="document.getElementById('editPizza{{ $pizza->id }}').classList.add('hidden')" 
                                                     class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                                                     Hủy
