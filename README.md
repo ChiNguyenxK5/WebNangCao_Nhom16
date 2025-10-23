@@ -1,93 +1,91 @@
-# 🍕 Laravel Pizza Ordering System
+🍕 Laravel Pizza Ordering System
 
-Website **bán pizza trực tuyến** được xây dựng bằng **Laravel**.  
+Website bán pizza trực tuyến được xây dựng bằng Laravel.
 Cho phép khách hàng đặt pizza nhanh chóng, dễ sử dụng, và quản trị viên có thể quản lý sản phẩm, đơn hàng, người dùng, v.v.
 
----
+🌟 Giới thiệu chính
+🛒 Dành cho khách hàng
 
-## 🌟 GIỚI THIỆU CHÍNH
+Xem danh sách pizza và chi tiết sản phẩm
 
-### 🛒 Dành cho khách hàng:
-- Xem danh sách pizza và chi tiết sản phẩm  
-- Thêm sản phẩm vào giỏ hàng  
-- Đặt hàng trực tuyến  
-- Đăng ký, đăng nhập tài khoản  
+Thêm sản phẩm vào giỏ hàng
 
-### 🧑‍💻 Dành cho quản trị viên:
-- Đăng nhập trang quản trị  
-- Quản lý danh mục pizza  
-- Quản lý đơn hàng, người dùng  
-- Thống kê doanh thu cơ bản  
+Đặt hàng trực tuyến
 
----
+Đăng ký, đăng nhập tài khoản
 
-## 🚀 CÁC BƯỚC CHẠY DỰ ÁN SAU KHI CLONE
+🧑‍💻 Dành cho quản trị viên
 
-### 🔹 Bước 1: Clone project
+Đăng nhập trang quản trị
+
+Quản lý danh mục pizza
+
+Quản lý đơn hàng và người dùng
+
+Xem thống kê doanh thu cơ bản
+
+⚙️ Cách chạy dự án sau khi clone
+🔹 Bước 1: Clone project
 git clone https://github.com/ChiNguyenxK5/WebNangCao_Nhom14.git
 cd WebNangCao_Nhom14
+
 🔹 Bước 2: Cài đặt PHP dependencies
-bash
-Sao chép mã
 composer install
+
 🔹 Bước 3: Cài đặt Node.js dependencies
-bash
-Sao chép mã
 npm install
+
 🔹 Bước 4: Tạo file môi trường .env
-bash
-Sao chép mã
 # Trên Windows
 copy .env.example .env
 
 # Hoặc trên Linux/Mac
 cp .env.example .env
+
 🔹 Bước 5: Tạo application key
-bash
-Sao chép mã
 php artisan key:generate
+
 🔹 Bước 6: Cấu hình database trong .env
+
 Ví dụ:
 
-env
-Sao chép mã
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=hotel_booking
+DB_DATABASE=pizza_ordering
 DB_USERNAME=root
 DB_PASSWORD=
-🔹 Bước 7: Tạo database & migrate
-Tạo database hotel_booking trong phpMyAdmin hoặc MySQL, sau đó chạy:
 
-bash
-Sao chép mã
+🔹 Bước 7: Tạo database & migrate
+
+Tạo database pizza_ordering trong phpMyAdmin hoặc MySQL, sau đó chạy:
+
 php artisan migrate
 php artisan db:seed
+
 🔹 Bước 8: Build assets (frontend)
-bash
-Sao chép mã
+# Build cho production
 npm run build
-# hoặc chạy ở chế độ development:
+
+# Hoặc chạy ở chế độ development
 npm run dev
+
 🔹 Bước 9: Khởi động server
-bash
-Sao chép mã
 php artisan serve
-💻 CÔNG NGHỆ SỬ DỤNG
-Laravel 10+
 
-PHP 8.2
 
-MySQL
+Sau đó truy cập:
+👉 http://localhost:8000
 
-Node.js & NPM
+💻 Công nghệ sử dụng
+Công nghệ	Mô tả
+🧱 Laravel 10+	Framework chính cho backend
+🐘 PHP 8.2	Ngôn ngữ lập trình chính
+🗄️ MySQL	Hệ quản trị cơ sở dữ liệu
+⚡ Node.js & NPM	Quản lý gói frontend
+🎨 Blade Template	Template engine của Laravel
+💅 Bootstrap / Tailwind CSS	Tạo giao diện hiện đại, responsive
+❤️ Tác giả
 
-Blade Template
-
-Bootstrap / Tailwind CSS
-
-❤️ TÁC GIẢ
 👩‍💻 Nhóm 16 - Web Nâng Cao
-
 Nếu bạn thấy dự án hữu ích, hãy ⭐ Star để ủng hộ nhé!
